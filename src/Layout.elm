@@ -113,7 +113,7 @@ highlightableLink currentPath linkDirectory displayName =
 githubRepoLink : Element msg
 githubRepoLink =
     Element.newTabLink []
-        { url = "https://github.com/dillonkearns/elm-pages"
+        { url = "https://github.com/thebritican/peoples-budget-viz"
         , label =
             Element.image
                 [ Element.width (Element.px 22)
