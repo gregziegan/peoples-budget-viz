@@ -1,6 +1,6 @@
-# elm-pages-starter
+# peoples-budget-viz
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/dillonkearns/elm-pages-starter)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/dillonkearns/peoples-budget-viz)
 
 This is an example repo to get you up and running with `elm-pages`.
 
@@ -12,13 +12,13 @@ Click "Use this template" on this Github page to fork the repo.
 Or git clone it:
 
 ```
-git clone git@github.com:dillonkearns/elm-pages-starter.git
+git clone git@github.com:dillonkearns/peoples-budget-viz.git
 ```
 
 Then install and run the dev server
 
 ```
-cd elm-pages-starter
+cd peoples-budget-viz
 npm install
 npm start # starts a local dev server using `elm-pages develop`
 ```

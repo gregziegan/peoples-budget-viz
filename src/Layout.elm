@@ -74,7 +74,7 @@ header currentPath =
                 , label =
                     Element.row [ Font.size 30, Element.spacing 16 ]
                         [ DocumentSvg.view
-                        , Element.text "elm-pages-starter"
+                        , Element.text "peoples-budget-viz"
                         ]
                 }
             , Element.row [ Element.spacing 15 ]

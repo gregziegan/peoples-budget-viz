@@ -32,12 +32,12 @@ manifest =
     , categories = [ Pages.Manifest.Category.education ]
     , displayMode = Manifest.Standalone
     , orientation = Manifest.Portrait
-    , description = "elm-pages-starter - A statically typed site generator."
+    , description = "peoples-budget-viz - A statically typed site generator."
     , iarcRatingId = Nothing
-    , name = "elm-pages-starter"
+    , name = "peoples-budget-viz"
     , themeColor = Just Color.white
     , startUrl = pages.index
-    , shortName = Just "elm-pages-starter"
+    , shortName = Just "peoples-budget-viz"
     , sourceIcon = images.iconPng
     , icons = []
     }
@@ -218,7 +218,7 @@ head metadata =
                 Metadata.Page meta ->
                     Seo.summaryLarge
                         { canonicalUrlOverride = Nothing
-                        , siteName = "elm-pages-starter"
+                        , siteName = "peoples-budget-viz"
                         , image =
                             { url = images.iconPng
                             , alt = "elm-pages logo"
@@ -271,7 +271,7 @@ head metadata =
                     in
                     Seo.summary
                         { canonicalUrlOverride = Nothing
-                        , siteName = "elm-pages-starter"
+                        , siteName = "peoples-budget-viz"
                         , image =
                             { url = meta.avatar
                             , alt = meta.name ++ "'s elm-pages articles."
@@ -308,7 +308,7 @@ head metadata =
 
 canonicalSiteUrl : String
 canonicalSiteUrl =
-    "https://elm-pages-starter.netlify.com"
+    "https://peoples-budget-viz.netlify.com"
 
 
 siteTagline : String

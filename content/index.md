@@ -1,5 +1,5 @@
 ---
-title: elm-pages-starter - a simple blog starter
+title: peoples-budget-viz - a simple blog starter
 type: page
 ---
 
