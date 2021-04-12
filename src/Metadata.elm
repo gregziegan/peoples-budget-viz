@@ -13,6 +13,7 @@ type Metadata
     | Article ArticleMetadata
     | Author Data.Author.Author
     | BlogIndex
+    | Visualization PageMetadata
 
 
 type alias ArticleMetadata =
@@ -41,6 +42,10 @@ decoder =
 
                     "blog-index" ->
                         Decode.succeed BlogIndex
+
+                    "visualization" ->
+                        Decode.field "title" Decode.string
+                            |> Decode.map (\title -> Visualization { title = title })
 
                     "author" ->
                         Decode.map3 Data.Author.Author

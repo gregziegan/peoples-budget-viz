@@ -1,5 +1,6 @@
 module Main exposing (main)
 
+import City
 import Color
 import Data.Author as Author
 import Date
@@ -32,7 +33,7 @@ manifest =
     , categories = [ Pages.Manifest.Category.education ]
     , displayMode = Manifest.Standalone
     , orientation = Manifest.Portrait
-    , description = "peoples-budget-viz - A statically typed site generator."
+    , description = "A visualization for changes to the budget of Nashville."
     , iarcRatingId = Nothing
     , name = "peoples-budget-viz"
     , themeColor = Just Color.white
@@ -78,7 +79,8 @@ generateFiles :
     ->
         StaticHttp.Request
             (List
-                (Result String
+                (Result
+                    String
                     { path : List String
                     , content : String
                     }
@@ -130,7 +132,10 @@ update msg model =
             ( model, Cmd.none )
 
 
+
 --subscriptions : Model -> Sub Msg
+
+
 subscriptions _ _ _ =
     Sub.none
 
@@ -191,6 +196,11 @@ pageView model siteMetadata page viewForPage =
             , body =
                 [ Element.column [ Element.padding 20, Element.centerX ] [ Index.view siteMetadata ]
                 ]
+            }
+
+        Metadata.Visualization metadata ->
+            { title = metadata.title
+            , body = [ viewForPage, City.visualization ]
             }
 
 
@@ -301,6 +311,22 @@ head metadata =
                         , description = siteTagline
                         , locale = Nothing
                         , title = "elm-pages blog"
+                        }
+                        |> Seo.website
+
+                Metadata.Visualization meta ->
+                    Seo.summaryLarge
+                        { canonicalUrlOverride = Nothing
+                        , siteName = "peoples-budget-viz"
+                        , image =
+                            { url = images.iconPng
+                            , alt = "elm-pages logo"
+                            , dimensions = Nothing
+                            , mimeType = Nothing
+                            }
+                        , description = siteTagline
+                        , locale = Nothing
+                        , title = meta.title
                         }
                         |> Seo.website
            )
