@@ -1,11 +1,14 @@
 module Main exposing (main)
 
-import City
+import City exposing (City)
 import Color
 import Data.Author as Author
 import Date
-import Element exposing (Element)
+import Element exposing (Element, column, fill, row, text, width)
+import Element.Background as Background
+import Element.Border as Border
 import Element.Font as Font
+import Element.Input as Input
 import Feed
 import Head
 import Head.Seo as Seo
@@ -113,23 +116,38 @@ markdownDocument =
 
 
 type alias Model =
-    {}
+    { city : City
+    , budget : City.Budget
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model, Cmd.none )
+    ( Model (City.init { parks = 1, parkingLots = 1, housing = 1 }) City.initialBudget, Cmd.none )
 
 
-type alias Msg =
-    ()
+type Msg
+    = ChangedParksBudget Float
+
+
+updateBudget transform budget =
+    transform budget
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        () ->
-            ( model, Cmd.none )
+        ChangedParksBudget parksBudget ->
+            let
+                newBudget =
+                    updateBudget (\budget -> { budget | parks = parksBudget }) model.budget
+            in
+            ( { model
+                | budget = newBudget
+                , city = City.changeBudget newBudget model.city
+              }
+            , Cmd.none
+            )
 
 
 
@@ -200,8 +218,45 @@ pageView model siteMetadata page viewForPage =
 
         Metadata.Visualization metadata ->
             { title = metadata.title
-            , body = [ viewForPage, City.visualization ]
+            , body = [ viewForPage, viewInteractiveCity model ]
             }
+
+
+viewParksBudgetSlider : Model -> Element Msg
+viewParksBudgetSlider model =
+    Input.slider
+        [ Element.height (Element.px 30)
+
+        -- Here is where we're creating/styling the "track"
+        , Element.behindContent
+            (Element.el
+                [ Element.width Element.fill
+                , Element.height (Element.px 2)
+                , Element.centerY
+                , Background.color Palette.color.secondary
+                , Border.rounded 2
+                ]
+                Element.none
+            )
+        ]
+        { onChange = ChangedParksBudget
+        , label =
+            Input.labelAbove []
+                (text "Parks Budget (in millions of USD)")
+        , min = 0
+        , max = 10
+        , step = Nothing
+        , value = model.budget.parks
+        , thumb =
+            Input.defaultThumb
+        }
+
+
+viewInteractiveCity model =
+    Element.column [ Element.width fill ]
+        [ Element.row [ Element.centerX ] [ viewParksBudgetSlider model ]
+        , Element.row [ Element.centerX ] [ City.visualization model.city ]
+        ]
 
 
 commonHeadTags : List (Head.Tag Pages.PathKey)
