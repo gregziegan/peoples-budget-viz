@@ -1,4 +1,4 @@
-module City.Building exposing (BuildingType(..), skyscraper)
+module City.Building exposing (BuildingType(..), view)
 
 import City.Tile as Tile exposing (Tile)
 import Svg exposing (Svg, defs, path, svg)
@@ -7,6 +7,13 @@ import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
 
 type BuildingType
     = Skyscraper
+
+
+view : Tile -> BuildingType -> Svg msg
+view tile buildingType =
+    case buildingType of
+        Skyscraper ->
+            skyscraper tile
 
 
 skyscraper : Tile -> Svg msg

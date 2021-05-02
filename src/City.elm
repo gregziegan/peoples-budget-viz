@@ -55,42 +55,16 @@ viewTile : Tile -> TileType -> Svg msg
 viewTile tile tileType =
     case tileType of
         Building buildingType ->
-            case buildingType of
-                Skyscraper ->
-                    Building.skyscraper tile
+            Building.view tile buildingType
 
         Park parkType ->
-            case parkType of
-                Forest ->
-                    Park.forest tile
-
-                Lawn ->
-                    Park.lawn tile
+            Park.view tile parkType
 
         Housing housingType ->
-            case housingType of
-                LowDensity ->
-                    Building.skyscraper tile
-
-                MediumDensity ->
-                    Housing.medApartment tile
+            Housing.view tile housingType
 
         Road roadType ->
-            case roadType of
-                Corner ->
-                    Road.corner tile
-
-                ThreeWay ->
-                    Road.threeWayIntersection tile
-
-                FourWay ->
-                    Road.fourWayIntersection tile
-
-                Straight ->
-                    Road.straight tile
-
-                Crosswalk ->
-                    Road.crosswalk tile
+            Road.view tile roadType
 
         BlankTile ->
             Tile.blank tile

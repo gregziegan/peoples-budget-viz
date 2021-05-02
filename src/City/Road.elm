@@ -1,4 +1,4 @@
-module City.Road exposing (RoadType(..), corner, crosswalk, fourWayIntersection, straight, threeWayIntersection)
+module City.Road exposing (RoadType(..), view)
 
 import City.Tile as Tile exposing (Tile)
 import Svg exposing (Svg, defs, path, svg)
@@ -11,6 +11,25 @@ type RoadType
     | FourWay
     | Straight
     | Crosswalk
+
+
+view : Tile -> RoadType -> Svg msg
+view tile roadType =
+    case roadType of
+        Corner ->
+            corner tile
+
+        ThreeWay ->
+            threeWayIntersection tile
+
+        FourWay ->
+            fourWayIntersection tile
+
+        Straight ->
+            straight tile
+
+        Crosswalk ->
+            crosswalk tile
 
 
 threeWayIntersection : Tile -> Svg msg
