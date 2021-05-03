@@ -1,6 +1,7 @@
 module City exposing (Budget, City, changeBudget, init, initialBudget, visualization)
 
 import City.Building as Building exposing (BuildingType(..))
+import City.Hospital as Hospital exposing (HospitalType(..))
 import City.Housing as Housing exposing (HousingType(..))
 import City.Park as Park exposing (ParkType(..))
 import City.Road as Road exposing (RoadType(..))
@@ -56,6 +57,9 @@ viewTile tile tileType =
     case tileType of
         Building buildingType ->
             Building.view tile buildingType
+
+        Hospital hospitalType ->
+            Hospital.view tile hospitalType
 
         Park parkType ->
             Park.view tile parkType
