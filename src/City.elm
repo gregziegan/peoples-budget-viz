@@ -1,6 +1,7 @@
 module City exposing (Budget, City, changeBudget, init, initialBudget, visualization)
 
 import City.Building as Building exposing (BuildingType(..))
+import City.Education as Education
 import City.Hospital as Hospital exposing (HospitalType(..))
 import City.Housing as Housing exposing (HousingType(..))
 import City.Park as Park exposing (ParkType(..))
@@ -64,6 +65,9 @@ viewTile tile tileType =
         Park parkType ->
             Park.view tile parkType
 
+        Education ->
+            Education.highSchool tile
+
         Housing housingType ->
             Housing.view tile housingType
 
@@ -91,7 +95,7 @@ visualization city =
             , svg [ Attr.x "700", Attr.y "337" ] [ t (Road Straight) ]
             , svg [ Attr.x "600", Attr.y "400" ] [ viewTile { tile | transform = "rotate(180 100 100)" } (Road Corner) ]
             , svg [ Attr.x "550", Attr.y "295" ] [ t (Building Skyscraper) ]
-            , svg [ Attr.x "860", Attr.y "260" ] [ t (Housing MediumDensity) ]
+            , svg [ Attr.x "860", Attr.y "260" ] [ t (Housing MediumApartment) ]
             , svg [ Attr.x "700", Attr.y "463" ] [ t (Road Crosswalk) ]
             , svg [ Attr.x "800", Attr.y "526" ] [ t (Road FourWay) ]
             , svg [ Attr.x "900", Attr.y "463" ] [ t (Road Straight) ]

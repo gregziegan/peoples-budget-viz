@@ -11,6 +11,7 @@ type TileType
     = Building BuildingType
     | Park ParkType
     | Housing HousingType
+    | Education
     | Hospital HospitalType
     | Road RoadType
     | BlankTile
