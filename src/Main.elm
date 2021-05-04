@@ -7,7 +7,6 @@ import City.Road exposing (Road, RoadType(..), Rotation(..))
 import Color
 import Data.Author as Author
 import Date
-import Debug exposing (log)
 import Element exposing (Element, column, fill, row, text, width)
 import Element.Background as Background
 import Element.Border as Border
@@ -2720,10 +2719,6 @@ update msg model =
 
         InitializeRandomness now ->
             let
-                -- seed = Random.initialSeed 1543524430781
-                seed =
-                    Random.initialSeed <| log "initial seed" <| Time.posixToMillis now
-
                 ( board, nextSeed ) =
                     Tiler.generateBoard boardWidth boardHeight generateOneOf validateNeighbors seed
             in
