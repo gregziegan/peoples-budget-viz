@@ -2719,6 +2719,9 @@ update msg model =
 
         InitializeRandomness now ->
             let
+                seed =
+                    Random.initialSeed <| Time.posixToMillis now
+
                 ( board, nextSeed ) =
                     Tiler.generateBoard boardWidth boardHeight generateOneOf validateNeighbors seed
             in
