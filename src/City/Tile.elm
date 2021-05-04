@@ -1,21 +1,25 @@
 module City.Tile exposing (Tile, attrs, blank, default)
 
 import Svg exposing (Svg, defs, path, svg)
-import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
+import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox, x)
 
 
 type alias Tile =
     { width : Int
     , height : Int
     , transform : String
+    , x : Int
+    , y : Int
     }
 
 
-default : Tile
-default =
+default : ( Int, Int ) -> Tile
+default ( x, y ) =
     { height = 200
     , width = 200
     , transform = ""
+    , x = x
+    , y = y
     }
 
 
@@ -23,6 +27,8 @@ attrs : Tile -> List (Svg.Attribute msg)
 attrs tile =
     [ Attr.width (String.fromInt tile.width)
     , Attr.height (String.fromInt tile.height)
+    , Attr.x (String.fromFloat <| toFloat tile.x * toFloat tile.width)
+    , Attr.y (String.fromFloat <| toFloat tile.y * toFloat tile.height)
     , transform tile.transform
     ]
 

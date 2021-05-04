@@ -1,4 +1,4 @@
-module City.Road exposing (RoadType(..), view)
+module City.Road exposing (Road, RoadType(..), Rotation(..), view)
 
 import City.Tile as Tile exposing (Tile)
 import Svg exposing (Svg, defs, path, svg)
@@ -6,11 +6,24 @@ import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
 
 
 type RoadType
-    = Corner
-    | ThreeWay
-    | FourWay
-    | Straight
-    | Crosswalk
+    = Corner -- West <-> South hallway
+    | Tee -- West <-> North <-> South intersection
+    | Junction -- 4 way intersection
+    | Straight --  North <-> South
+    | DeadEnd -- Enter from South
+
+
+type alias Road =
+    { style : RoadType
+    , rotation : Rotation
+    }
+
+
+type Rotation
+    = RNone
+    | RQuarter
+    | RHalf
+    | RThreeQuarters
 
 
 view : Tile -> RoadType -> Svg msg
@@ -19,17 +32,17 @@ view tile roadType =
         Corner ->
             corner tile
 
-        ThreeWay ->
+        Tee ->
             threeWayIntersection tile
 
-        FourWay ->
+        Junction ->
             fourWayIntersection tile
 
         Straight ->
             straight tile
 
-        Crosswalk ->
-            crosswalk tile
+        DeadEnd ->
+            straight tile
 
 
 threeWayIntersection : Tile -> Svg msg

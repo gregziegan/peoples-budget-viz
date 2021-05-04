@@ -1,9 +1,13 @@
 module Main exposing (main)
 
+import Browser exposing (Document)
+import Browser.Events exposing (onAnimationFrameDelta)
 import City exposing (City)
+import City.Road exposing (Road, RoadType(..), Rotation(..))
 import Color
 import Data.Author as Author
 import Date
+import Debug exposing (log)
 import Element exposing (Element, column, fill, row, text, width)
 import Element.Background as Background
 import Element.Border as Border
@@ -13,6 +17,8 @@ import Feed
 import Head
 import Head.Seo as Seo
 import Html exposing (Html)
+import Html.Attributes as Attrs
+import Html.Events as Events
 import Index
 import Json.Decode
 import Layout
@@ -28,6 +34,10 @@ import Pages.PagePath exposing (PagePath)
 import Pages.Platform
 import Pages.StaticHttp as StaticHttp
 import Palette
+import Random exposing (Generator, Seed)
+import Task
+import Tiler exposing (Board, Neighbor(..))
+import Time exposing (Posix)
 
 
 manifest : Manifest.Config Pages.PathKey
@@ -115,19 +125,2578 @@ markdownDocument =
     }
 
 
+cellSize : Float
+cellSize =
+    10
+
+
+boardWidth : Int
+boardWidth =
+    6
+
+
+boardHeight : Int
+boardHeight =
+    6
+
+
+
+---- INIT ----
+
+
+generateOneOf : ( Int, Int ) -> ( Road, List Road )
+generateOneOf _ =
+    ( Road Straight RNone
+    , [ Road Straight RQuarter
+      , Road Straight RNone
+      , Road Straight RQuarter
+      , Road Corner RNone
+      , Road Corner RQuarter
+      , Road Corner RHalf
+      , Road Corner RThreeQuarters
+      , Road DeadEnd RNone
+      , Road DeadEnd RQuarter
+      , Road DeadEnd RHalf
+      , Road DeadEnd RThreeQuarters
+      , Road Junction RNone
+      , Road Tee RNone
+      , Road Tee RQuarter
+      , Road Tee RHalf
+      , Road Tee RThreeQuarters
+      ]
+    )
+
+
+validateNeighbors : List Road -> List Road -> Neighbor -> ( Road, List Road )
+validateNeighbors possibleThisTiles possibleNeighbors neighborDirection =
+    let
+        filteredPossibilities =
+            List.filter (\neigh -> List.any (\self -> validJunction neighborDirection self neigh) possibleThisTiles) possibleNeighbors
+    in
+    case filteredPossibilities of
+        t :: others ->
+            ( t, others )
+
+        [] ->
+            -- TODO: Find a way to never reach this
+            ( Road Straight RNone, [] )
+
+
+validJunction : Neighbor -> Road -> Road -> Bool
+validJunction neighborDirection self neighbor =
+    case ( self.style, self.rotation, neighborDirection ) of
+        -- Straight
+        -- Straight, North neighbor
+        ( Straight, RNone, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RHalf, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RQuarter, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RThreeQuarters, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Straight, South neighbor
+        ( Straight, RNone, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RHalf, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RQuarter, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RThreeQuarters, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Straight, East neighbor
+        ( Straight, RNone, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RHalf, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RQuarter, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RThreeQuarters, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Straight, West neighbor
+        ( Straight, RNone, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RHalf, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RQuarter, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RThreeQuarters, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Corner
+        -- Corner, North neighbor
+        ( Corner, RNone, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RQuarter, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RHalf, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RThreeQuarters, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Corner, South neighbor
+        ( Corner, RNone, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RQuarter, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RHalf, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RThreeQuarters, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Corner, East neighbor
+        ( Corner, RNone, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RQuarter, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RHalf, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RThreeQuarters, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Corner, West neighbor
+        ( Corner, RNone, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RQuarter, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RHalf, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RThreeQuarters, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Dead End
+        -- Dead End, North neighbor
+        ( DeadEnd, RNone, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RQuarter, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RHalf, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RThreeQuarters, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Dead End, South neighbor
+        ( DeadEnd, RNone, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RQuarter, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RHalf, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RThreeQuarters, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Dead End, East neighbor
+        ( DeadEnd, RNone, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RQuarter, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RHalf, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RThreeQuarters, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Dead End, West neighbor
+        ( DeadEnd, RNone, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RQuarter, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RHalf, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( DeadEnd, RThreeQuarters, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Junction
+        -- Junction, North neighbor
+        ( Junction, RNone, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RQuarter, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RHalf, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RThreeQuarters, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Junction, South neighbor
+        ( Junction, RNone, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RQuarter, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RHalf, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RThreeQuarters, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Junction, East neighbor
+        ( Junction, RNone, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RQuarter, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RHalf, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RThreeQuarters, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Junction, West neighbor
+        ( Junction, RNone, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RQuarter, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RHalf, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Junction, RThreeQuarters, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Tee
+        -- Tee, North neighbor
+        ( Tee, RNone, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RQuarter, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RHalf, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RThreeQuarters, North ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Tee, South neighbor
+        ( Tee, RNone, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RQuarter, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RHalf, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RThreeQuarters, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Tee, East neighbor
+        ( Tee, RNone, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RQuarter, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RHalf, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RThreeQuarters, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Tee, West neighbor
+        ( Tee, RNone, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RQuarter, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RHalf, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( DeadEnd, RNone ) ->
+                    True
+
+                ( DeadEnd, RHalf ) ->
+                    True
+
+                ( DeadEnd, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RThreeQuarters, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Junction, _ ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                ( DeadEnd, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+
 type alias Model =
     { city : City
     , budget : City.Budget
+    , randomSeed : Seed
+    , board : Board Road
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model (City.init { parks = 1, parkingLots = 1, housing = 1 }) City.initialBudget, Cmd.none )
+    ( { randomSeed = Random.initialSeed 0
+      , board = Tiler.emptyBoard
+      , city = City.init { parks = 1, parkingLots = 1, housing = 1 }
+      , budget = City.initialBudget
+      }
+    , Cmd.batch
+        [ Task.perform InitializeRandomness Time.now
+        ]
+    )
 
 
 type Msg
     = ChangedParksBudget Float
+    | InitializeRandomness Posix
+    | Tick Float
 
 
 updateBudget transform budget =
@@ -148,6 +2717,25 @@ update msg model =
               }
             , Cmd.none
             )
+
+        InitializeRandomness now ->
+            let
+                -- seed = Random.initialSeed 1543524430781
+                seed =
+                    Random.initialSeed <| log "initial seed" <| Time.posixToMillis now
+
+                ( board, nextSeed ) =
+                    Tiler.generateBoard boardWidth boardHeight generateOneOf validateNeighbors seed
+            in
+            ( { model
+                | randomSeed = nextSeed
+                , board = board
+              }
+            , Cmd.none
+            )
+
+        Tick _ ->
+            ( model, Cmd.none )
 
 
 
@@ -255,7 +2843,7 @@ viewParksBudgetSlider model =
 viewInteractiveCity model =
     Element.column [ Element.width fill ]
         [ Element.row [ Element.centerX ] [ viewParksBudgetSlider model ]
-        , Element.row [ Element.centerX ] [ City.visualization model.city ]
+        , Element.row [ Element.centerX ] [ City.visualization model.board model.city ]
         ]
 
 
