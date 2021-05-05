@@ -64,10 +64,6 @@ generateOneOf _ =
       , Road Corner RQuarter
       , Road Corner RHalf
       , Road Corner RThreeQuarters
-      , Road DeadEnd RNone
-      , Road DeadEnd RQuarter
-      , Road DeadEnd RHalf
-      , Road DeadEnd RThreeQuarters
       , Road Junction RNone
       , Road Tee RNone
       , Road Tee RQuarter
@@ -123,9 +119,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RHalf ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
                 _ ->
                     False
 
@@ -155,9 +148,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RHalf ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
                 _ ->
                     False
 
@@ -178,15 +168,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -205,15 +186,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -246,9 +218,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RHalf ) ->
-                    True
-
                 _ ->
                     False
 
@@ -278,9 +247,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RHalf ) ->
-                    True
-
                 _ ->
                     False
 
@@ -301,15 +267,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RQuarter ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -328,15 +285,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -360,15 +308,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RHalf ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
                 _ ->
                     False
 
@@ -387,15 +326,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
                     True
 
                 _ ->
@@ -427,9 +357,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -459,9 +386,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -483,15 +407,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RNone ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -510,15 +425,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RNone ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -550,9 +456,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RQuarter ) ->
-                    True
-
                 _ ->
                     False
 
@@ -582,9 +485,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RQuarter ) ->
-                    True
-
                 _ ->
                     False
 
@@ -607,15 +507,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -634,15 +525,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -674,9 +556,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RHalf ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
                 _ ->
                     False
 
@@ -704,9 +583,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
                     True
 
                 _ ->
@@ -739,9 +615,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RHalf ) ->
-                    True
-
                 _ ->
                     False
 
@@ -771,9 +644,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RHalf ) ->
-                    True
-
                 _ ->
                     False
 
@@ -792,15 +662,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -823,15 +684,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RQuarter ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -851,15 +703,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
                     True
 
                 _ ->
@@ -891,9 +734,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -923,9 +763,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -941,15 +778,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Corner, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
                     True
 
                 _ ->
@@ -982,9 +810,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RQuarter ) ->
-                    True
-
                 _ ->
                     False
 
@@ -1005,15 +830,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RNone ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -1032,15 +848,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RNone ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -1070,490 +877,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                _ ->
-                    False
-
-        -- Dead End
-        -- Dead End, North neighbor
-        ( DeadEnd, RNone, North ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
-                    True
-
-                ( Straight, RThreeQuarters ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RQuarter, North ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
-                    True
-
-                ( Straight, RThreeQuarters ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RHalf, North ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Junction, _ ) ->
-                    True
-
-                ( Corner, RNone ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( Tee, RQuarter ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RThreeQuarters, North ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
-                    True
-
-                ( Straight, RThreeQuarters ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
-                _ ->
-                    False
-
-        -- Dead End, South neighbor
-        ( DeadEnd, RNone, South ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Junction, _ ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RQuarter, South ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
-                    True
-
-                ( Straight, RThreeQuarters ) ->
-                    True
-
-                ( Corner, RNone ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Tee, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RHalf, South ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
-                    True
-
-                ( Straight, RThreeQuarters ) ->
-                    True
-
-                ( Corner, RNone ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Tee, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RThreeQuarters, South ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
-                    True
-
-                ( Straight, RThreeQuarters ) ->
-                    True
-
-                ( Corner, RNone ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Tee, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
-                _ ->
-                    False
-
-        -- Dead End, East neighbor
-        ( DeadEnd, RNone, East ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RQuarter, East ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
-                    True
-
-                ( Straight, RThreeQuarters ) ->
-                    True
-
-                ( Junction, _ ) ->
-                    True
-
-                ( Corner, RNone ) ->
-                    True
-
-                ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( Tee, RQuarter ) ->
-                    True
-
-                ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RHalf, East ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RThreeQuarters, East ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                _ ->
-                    False
-
-        -- Dead End, West neighbor
-        ( DeadEnd, RNone, West ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Corner, RNone ) ->
-                    True
-
-                ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RQuarter, West ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Corner, RNone ) ->
-                    True
-
-                ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RHalf, West ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Corner, RNone ) ->
-                    True
-
-                ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( DeadEnd, RThreeQuarters, West ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
-                    True
-
-                ( Straight, RThreeQuarters ) ->
-                    True
-
-                ( Junction, _ ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Tee, RQuarter ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
                     True
 
                 _ ->
@@ -1587,9 +910,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RHalf ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
                 _ ->
                     False
 
@@ -1617,9 +937,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
                     True
 
                 _ ->
@@ -1651,9 +968,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RHalf ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
                 _ ->
                     False
 
@@ -1681,9 +995,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
                     True
 
                 _ ->
@@ -1716,9 +1027,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RHalf ) ->
-                    True
-
                 _ ->
                     False
 
@@ -1746,9 +1054,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
                     True
 
                 _ ->
@@ -1780,9 +1085,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RHalf ) ->
-                    True
-
                 _ ->
                     False
 
@@ -1810,9 +1112,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
                     True
 
                 _ ->
@@ -1845,9 +1144,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -1875,9 +1171,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -1909,9 +1202,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -1939,9 +1229,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -1974,9 +1261,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RQuarter ) ->
-                    True
-
                 _ ->
                     False
 
@@ -2004,9 +1288,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
                     True
 
                 _ ->
@@ -2038,9 +1319,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RQuarter ) ->
-                    True
-
                 _ ->
                     False
 
@@ -2068,9 +1346,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
                     True
 
                 _ ->
@@ -2104,9 +1379,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RHalf ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
                 _ ->
                     False
 
@@ -2125,15 +1397,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -2165,9 +1428,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RHalf ) ->
                     True
 
-                ( DeadEnd, RNone ) ->
-                    True
-
                 _ ->
                     False
 
@@ -2195,9 +1455,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
                     True
 
                 _ ->
@@ -2230,9 +1487,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RHalf ) ->
-                    True
-
                 _ ->
                     False
 
@@ -2260,9 +1514,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
                     True
 
                 _ ->
@@ -2294,9 +1545,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RHalf ) ->
-                    True
-
                 _ ->
                     False
 
@@ -2315,15 +1563,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -2345,15 +1584,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RHalf ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
                     True
 
                 _ ->
@@ -2385,9 +1615,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -2417,9 +1644,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RThreeQuarters ) ->
-                    True
-
                 _ ->
                     False
 
@@ -2447,9 +1671,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -2482,9 +1703,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RQuarter ) ->
-                    True
-
                 _ ->
                     False
 
@@ -2514,9 +1732,6 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( DeadEnd, RQuarter ) ->
-                    True
-
                 _ ->
                     False
 
@@ -2535,15 +1750,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RNone ) ->
-                    True
-
-                ( DeadEnd, RNone ) ->
-                    True
-
-                ( DeadEnd, RHalf ) ->
-                    True
-
-                ( DeadEnd, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -2573,9 +1779,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
-                    True
-
-                ( DeadEnd, RQuarter ) ->
                     True
 
                 _ ->
@@ -2646,9 +1849,6 @@ cellStyleToString style =
 
         Corner ->
             "Corner"
-
-        DeadEnd ->
-            "Dead End"
 
 
 drawTile : ( Int, Int ) -> ( Road, List Road ) -> Svg msg

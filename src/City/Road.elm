@@ -10,7 +10,6 @@ type RoadType
     | Tee -- West <-> North <-> South intersection
     | Junction -- 4 way intersection
     | Straight --  North <-> South
-    | DeadEnd -- Enter from South
 
 
 type alias Road =
@@ -55,13 +54,6 @@ view tile roadType =
             fourWayIntersection tile
 
         Straight ->
-            if useAlt then
-                straightAlt tile
-
-            else
-                straight tile
-
-        DeadEnd ->
             if useAlt then
                 straightAlt tile
 
