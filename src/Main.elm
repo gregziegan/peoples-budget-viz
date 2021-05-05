@@ -3,7 +3,7 @@ module Main exposing (main)
 import Browser exposing (Document)
 import Browser.Events exposing (onAnimationFrameDelta)
 import City exposing (City)
-import City.Road exposing (Road, RoadType(..), Rotation(..))
+import City.Road exposing (Road, RoadType(..))
 import Color
 import Data.Author as Author
 import Date

@@ -5,8 +5,8 @@ import City.Education as Education
 import City.Hospital as Hospital exposing (HospitalType(..))
 import City.Housing as Housing exposing (HousingType(..))
 import City.Park as Park exposing (ParkType(..))
-import City.Road as Road exposing (Road, RoadType(..), Rotation(..))
-import City.Tile as Tile exposing (Tile)
+import City.Road as Road exposing (Road, RoadType(..))
+import City.Tile as Tile exposing (Rotation(..), Tile)
 import City.TileType exposing (TileType(..))
 import Element exposing (Element, px, shrink)
 import Random exposing (Seed)
@@ -2622,41 +2622,14 @@ drawRoad : ( Int, Int ) -> Road -> Svg msg
 drawRoad ( x, y ) { style, rotation } =
     let
         tile =
-            Tile.default ( x, y )
-
-        midX =
-            (tile.x * tile.width) + (tile.width // 2)
-
-        midY =
-            (tile.y * tile.height) + (tile.height // 2)
-
-        ( rotInDeg, translate ) =
-            case rotation of
-                RNone ->
-                    ( "0", "" )
-
-                RQuarter ->
-                    ( "-180", "" )
-
-                RHalf ->
-                    ( "0", "" )
-
-                RThreeQuarters ->
-                    ( "-180", "" )
-
-        rotate =
-            "rotate(" ++ rotInDeg ++ " " ++ String.fromInt midX ++ " " ++ String.fromInt midY ++ ")"
+            Tile.default ( x, y ) rotation
     in
-    Road.view
-        { tile
-            | transform = rotate ++ " " ++ translate
-        }
-        style
+    Road.view tile style
 
 
 drawUndecided : ( Int, Int ) -> String -> Svg msg
 drawUndecided position style =
-    Tile.blank (Tile.default position)
+    Tile.blank (Tile.default position RNone)
 
 
 cellStyleToString : RoadType -> String
