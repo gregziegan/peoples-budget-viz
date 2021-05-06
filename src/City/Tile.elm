@@ -1,29 +1,69 @@
-module City.Tile exposing (Tile, attrs, blank, default)
+module City.Tile exposing (Rotation(..), Tile, attrs, blank, default)
 
 import Svg exposing (Svg, defs, path, svg)
-import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
+import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox, x)
 
 
 type alias Tile =
     { width : Int
     , height : Int
-    , transform : String
+    , rotation : Rotation
+    , x : Int
+    , y : Int
     }
 
 
-default : Tile
-default =
+type Rotation
+    = RNone
+    | RQuarter
+    | RHalf
+    | RThreeQuarters
+
+
+default : ( Int, Int ) -> Rotation -> Tile
+default ( x, y ) rotation =
     { height = 200
     , width = 200
-    , transform = ""
+    , rotation = rotation
+    , x = x
+    , y = y
     }
 
 
 attrs : Tile -> List (Svg.Attribute msg)
 attrs tile =
+    let
+        rotInDeg =
+            case tile.rotation of
+                RNone ->
+                    0
+
+                RQuarter ->
+                    0
+
+                RHalf ->
+                    -180
+
+                RThreeQuarters ->
+                    0
+
+        ( originX, originY ) =
+            ( 7, 1 )
+
+        ( x, y ) =
+            ( tile.x + originX - tile.y, tile.y + originY + tile.x )
+
+        midX =
+            (x * 95) + (tile.width // 2)
+
+        midY =
+            (y * 60) + (tile.height // 2)
+    in
     [ Attr.width (String.fromInt tile.width)
     , Attr.height (String.fromInt tile.height)
-    , transform tile.transform
+    , Attr.x (String.fromFloat <| (toFloat x * 95))
+    , Attr.y (String.fromFloat <| (toFloat y * 60))
+    , transform ("rotate(" ++ String.fromInt rotInDeg ++ " " ++ String.fromInt midX ++ " " ++ String.fromInt midY ++ ")")
     ]
 
 

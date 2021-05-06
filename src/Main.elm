@@ -1,6 +1,9 @@
 module Main exposing (main)
 
+import Browser exposing (Document)
+import Browser.Events exposing (onAnimationFrameDelta)
 import City exposing (City)
+import City.Road exposing (Road, RoadType(..))
 import Color
 import Data.Author as Author
 import Date
@@ -13,6 +16,8 @@ import Feed
 import Head
 import Head.Seo as Seo
 import Html exposing (Html)
+import Html.Attributes as Attrs
+import Html.Events as Events
 import Index
 import Json.Decode
 import Layout
@@ -28,6 +33,10 @@ import Pages.PagePath exposing (PagePath)
 import Pages.Platform
 import Pages.StaticHttp as StaticHttp
 import Palette
+import Random exposing (Generator, Seed)
+import Task
+import Tiler exposing (Board, Neighbor(..))
+import Time exposing (Posix)
 
 
 manifest : Manifest.Config Pages.PathKey
@@ -115,19 +124,35 @@ markdownDocument =
     }
 
 
+
+---- INIT ----
+
+
 type alias Model =
     { city : City
     , budget : City.Budget
+    , randomSeed : Seed
+    , board : Board Road
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model (City.init { parks = 1, parkingLots = 1, housing = 1 }) City.initialBudget, Cmd.none )
+    ( { randomSeed = Random.initialSeed 0
+      , board = Tiler.emptyBoard
+      , city = City.init { parks = 1, parkingLots = 1, housing = 1 }
+      , budget = City.initialBudget
+      }
+    , Cmd.batch
+        [ Task.perform InitializeRandomness Time.now
+        ]
+    )
 
 
 type Msg
     = ChangedParksBudget Float
+    | InitializeRandomness Posix
+    | Tick Float
 
 
 updateBudget transform budget =
@@ -148,6 +173,24 @@ update msg model =
               }
             , Cmd.none
             )
+
+        InitializeRandomness now ->
+            let
+                seed =
+                    Random.initialSeed <| Time.posixToMillis now
+
+                ( board, nextSeed ) =
+                    City.generate seed
+            in
+            ( { model
+                | randomSeed = nextSeed
+                , board = board
+              }
+            , Cmd.none
+            )
+
+        Tick _ ->
+            ( model, Cmd.none )
 
 
 
@@ -255,7 +298,7 @@ viewParksBudgetSlider model =
 viewInteractiveCity model =
     Element.column [ Element.width fill ]
         [ Element.row [ Element.centerX ] [ viewParksBudgetSlider model ]
-        , Element.row [ Element.centerX ] [ City.visualization model.city ]
+        , Element.row [ Element.centerX ] [ City.visualization model.board model.city ]
         ]
 
 

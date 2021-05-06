@@ -1,35 +1,64 @@
-module City.Road exposing (RoadType(..), view)
+module City.Road exposing (Road, RoadType(..), view)
 
-import City.Tile as Tile exposing (Tile)
+import City.Tile as Tile exposing (Rotation(..), Tile)
 import Svg exposing (Svg, defs, path, svg)
 import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
 
 
 type RoadType
-    = Corner
-    | ThreeWay
-    | FourWay
-    | Straight
-    | Crosswalk
+    = Corner -- West <-> South hallway
+    | Tee -- West <-> North <-> South intersection
+    | Junction -- 4 way intersection
+    | Straight --  North <-> South
+
+
+type alias Road =
+    { style : RoadType
+    , rotation : Rotation
+    }
 
 
 view : Tile -> RoadType -> Svg msg
 view tile roadType =
+    let
+        useAlt =
+            case tile.rotation of
+                RNone ->
+                    False
+
+                RQuarter ->
+                    True
+
+                RHalf ->
+                    False
+
+                RThreeQuarters ->
+                    True
+    in
     case roadType of
         Corner ->
-            corner tile
+            if useAlt then
+                cornerAlt tile
 
-        ThreeWay ->
-            threeWayIntersection tile
+            else
+                corner tile
 
-        FourWay ->
+        Tee ->
+            if useAlt then
+                threeWayIntersectionAlt tile
+
+            else
+                threeWayIntersection tile
+
+        Junction ->
             fourWayIntersection tile
 
         Straight ->
-            straight tile
+            if useAlt then
+                straightAlt tile
 
-        Crosswalk ->
-            crosswalk tile
+            else
+                straight tile
 
 
 threeWayIntersection : Tile -> Svg msg
@@ -50,6 +79,26 @@ threeWayIntersection tile =
         , path [ fill "#fff", d "M48.422 30.996l.847-.563L16.708 9.957l-.847.562 32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M16.87 14.895l6.727-4.213-2.515-1.538-6.727 4.212 2.515 1.54M22.324 17.77l6.724-4.212-2.516-1.539-6.727 4.212 2.519 1.54M29.245 22.016l6.33-3.98-2.964-2.876-6.724 4.213 3.358 2.643M33.024 25.62l6.723-4.213-3.986-2.394-5.934 3.732 3.197 2.875M38.276 28.497l6.728-4.214-2.515-1.538-6.728 4.213 2.515 1.539M42.898 31.638l6.727-4.214-2.515-1.539-6.728 4.212 2.516 1.54" ]
+            []
+        ]
+
+
+threeWayIntersectionAlt : Tile -> Svg msg
+threeWayIntersectionAlt tile =
+    svg (Tile.attrs tile ++ [ viewBox "0 0 65.126 40.952" ])
+        [ path [ d "M32.561 40.952L0 20.475 32.561 0l32.565 20.475-32.565 20.477", fill "#dcdff0" ]
+            []
+        , path [ d "M23.53 35.247L9.031 26.18 41.596 5.704l14.496 9.066L23.53 35.247", fill "#a3b7dd" ]
+            []
+        , path [ d "M16.704 30.995l-.847-.563L48.42 9.957l.85.56-32.565 20.478", fill "#fff" ]
+            []
+        , path [ d "M48.256 14.895l-6.727-4.214 2.515-1.537 6.728 4.211-2.516 1.54m-5.45 2.875l-6.727-4.212 2.515-1.54 6.727 4.213-2.515 1.54m-6.078 3.139L30 16.699l2.516-1.538 6.727 4.211-2.515 1.54m-4.622 4.708l-6.727-4.213 3.464-2.025 6.728 4.212-3.465 2.026m-5.256 2.876l-6.728-4.214 2.516-1.538 6.727 4.213-2.515 1.539m-4.621 3.141L15.5 27.423l2.515-1.538 6.728 4.212-2.515 1.54", fill "#a3b7dd" ]
+            []
+        , path [ d "M33.7 18.416c1.641-1.021 3.303-2.05 4.763-3.323l-3.841-2.415L23.53 5.704 9.031 14.77 20.8 22.172l3.034 1.907c3.302-1.865 6.65-3.655 9.867-5.663", fill "#a3b7dd" ]
+            []
+        , path [ d "M35.147 22.598l.847-.563-19.29-12.078-.847.56 19.29 12.08", fill "#fff" ]
+            []
+        , path [ d "M16.866 14.895l6.728-4.214-2.516-1.537-6.727 4.211 2.515 1.54m5.454 2.875l6.728-4.212-2.516-1.54-6.727 4.213 2.515 1.54m6.922 4.244l6.329-3.98-2.96-2.875-6.728 4.211 3.359 2.644m3.778 3.605l6.727-4.213-3.986-2.394-5.937 3.731 3.196 2.876", fill "#a3b7dd" ]
             []
         ]
 
@@ -96,6 +145,30 @@ corner tile =
         ]
 
 
+cornerAlt : Tile -> Svg msg
+cornerAlt tile =
+    svg (Tile.attrs tile ++ [ viewBox "0 0 65.126 40.953" ])
+        [ path [ d "M32.565 0L0 20.477l32.565 20.476 32.561-20.476L32.565 0", fill "#dcdff0" ]
+            []
+        , path [ d "M32.628 11.409L18.13 20.477l23.467 14.77 14.5-9.066-23.47-14.771", fill "#a3b7dd" ]
+            []
+        , path [ d "M26.734 16.31l-.85.563 22.538 14.122.847-.56L26.734 16.31", fill "#fff" ]
+            []
+        , path [ d "M48.26 26.058l-6.727 4.213 2.515 1.538 6.727-4.212-2.515-1.54m-5.454-2.876l-6.727 4.213 2.515 1.539 6.727-4.212-2.515-1.54m-6.078-3.14L30 24.255l2.516 1.537 6.727-4.212-2.515-1.539m-4.622-4.709l-6.727 4.214 3.468 2.024 6.727-4.212-3.468-2.026", fill "#a3b7dd" ]
+            []
+        , path [ d "M27.372 14.848l-5.468 5.443 5.302 3.04 6.728-4.213-6.562-4.27", fill "#a3b7dd" ]
+            []
+        , path [ d "M33.704 22.535c1.637 1.023 3.302 2.051 4.76 3.324l-3.842 2.416-11.088 6.973L9.03 26.18l11.772-7.4 3.034-1.908c3.302 1.864 6.65 3.656 9.867 5.662", fill "#a3b7dd" ]
+            []
+        , path [ d "M38.04 16.592l.847.563-22.18 13.84-.85-.56L38.04 16.591", fill "#fff" ]
+            []
+        , path [ d "M16.87 26.058l6.727 4.213-2.515 1.538-6.727-4.212 2.515-1.54m5.45-2.876l6.728 4.213-2.516 1.539-6.727-4.212 2.515-1.54m6.195-3.691l6.329 3.979-2.233 2.29-6.728-4.212 2.632-2.058m4.505-4.157l6.727 4.214-3.986 2.394-5.934-3.732 3.193-2.876", fill "#a3b7dd" ]
+            []
+        , path [ d "M36.195 14.539l6.727 4.214-2.515 1.538-6.727-4.212 2.515-1.54", fill "#a3b7dd" ]
+            []
+        ]
+
+
 straight : Tile -> Svg msg
 straight tile =
     svg (Tile.attrs tile ++ [ viewBox "0 0 65.123 40.951" ])
@@ -106,6 +179,20 @@ straight tile =
         , path [ fill "#fff", d "M16.704 30.995l-.847-.562L48.42 9.957l.846.561-32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M48.256 14.895l-6.727-4.213 2.515-1.538 6.728 4.211-2.516 1.54M42.806 17.771l-6.727-4.213 2.515-1.539 6.724 4.212-2.512 1.54M36.728 20.91L30 16.699l2.512-1.538 6.727 4.212-2.511 1.539M32.103 25.62l-6.728-4.213 2.516-1.539 6.727 4.213-2.515 1.54M26.85 28.496l-6.728-4.213 2.516-1.538 6.727 4.211-2.515 1.54M22.229 31.637L15.5 27.424l2.515-1.539 6.728 4.212-2.515 1.54" ]
+            []
+        ]
+
+
+straightAlt : Tile -> Svg msg
+straightAlt tile =
+    svg (Tile.attrs tile ++ [ viewBox "0 0 65.126 40.953" ])
+        [ path [ d "M32.565 40.953l32.561-20.477L32.565 0 0 20.476l32.565 20.477", fill "#dcdff0" ]
+            []
+        , path [ d "M41.596 35.247l14.5-9.066L23.53 5.705 9.031 14.771l32.565 20.476", fill "#a3b7dd" ]
+            []
+        , path [ d "M48.422 30.995l.847-.563L16.704 9.957l-.847.561 32.565 20.477", fill "#fff" ]
+            []
+        , path [ d "M16.866 14.895l6.728-4.213-2.516-1.538-6.727 4.212 2.515 1.539m5.454 2.876l6.728-4.213-2.516-1.538-6.727 4.212 2.515 1.54m6.079 3.14l6.727-4.214-2.515-1.538-6.728 4.212 2.516 1.54m4.621 4.708l6.727-4.213-2.515-1.538-6.727 4.212 2.515 1.54m5.256 2.875l6.728-4.213-2.515-1.539-6.728 4.212 2.515 1.54m4.622 3.141l6.727-4.213-2.515-1.538-6.728 4.212 2.516 1.54", fill "#a3b7dd" ]
             []
         ]
 
