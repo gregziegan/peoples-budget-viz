@@ -47,11 +47,11 @@ initialBudget =
 
 
 cityWidth =
-    8
+    15
 
 
 cityHeight =
-    8
+    15
 
 
 generate : Seed -> ( Board CityTile, Seed )
@@ -72,6 +72,10 @@ generateOneOf _ =
       , Connecting (Road Tee RQuarter)
       , Connecting (Road Tee RHalf)
       , Connecting (Road Tee RThreeQuarters)
+      , EmptyPlot
+      , EmptyPlot
+      , EmptyPlot
+      , EmptyPlot
       , EmptyPlot
       , EmptyPlot
       , EmptyPlot
@@ -2070,6 +2074,7 @@ drawCityTile : ( Int, Int ) -> CityTile -> Svg msg
 drawCityTile ( x, y ) cityTile =
     case cityTile of
         EmptyPlot ->
+            -- Housing.view { width = 90, height = 90, rotation = RNone, x = x - 1, y = y - 1 } (TallApartment 0)
             Tile.blank (Tile.default ( x, y ) RNone)
 
         Connecting ({ rotation } as road) ->

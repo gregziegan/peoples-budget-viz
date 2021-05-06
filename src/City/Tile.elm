@@ -22,8 +22,8 @@ type Rotation
 
 default : ( Int, Int ) -> Rotation -> Tile
 default ( x, y ) rotation =
-    { height = 200
-    , width = 200
+    { height = 100
+    , width = 100
     , rotation = rotation
     , x = x
     , y = y
@@ -48,22 +48,22 @@ attrs tile =
                     -180
 
         ( originX, originY ) =
-            ( 7, 1 )
+            ( 16, 1 )
 
         ( x, y ) =
             ( tile.x + originX - tile.y, tile.y + originY + tile.x )
 
         midX =
-            (x * 95) + (tile.width // 2)
+            (toFloat x * 95 / 2) + toFloat (tile.width // 2)
 
         midY =
-            (y * 60) + (tile.height // 2)
+            (toFloat y * 60 / 2) + toFloat (tile.height // 2)
     in
     [ Attr.width (String.fromInt tile.width)
     , Attr.height (String.fromInt tile.height)
-    , Attr.x (String.fromFloat <| (toFloat x * 95))
-    , Attr.y (String.fromFloat <| (toFloat y * 60))
-    , transform ("rotate(" ++ String.fromInt rotInDeg ++ " " ++ String.fromInt midX ++ " " ++ String.fromInt midY ++ ")")
+    , Attr.x (String.fromFloat <| (toFloat x * 95 / 2))
+    , Attr.y (String.fromFloat <| (toFloat y * 60 / 2))
+    , transform ("rotate(" ++ String.fromInt rotInDeg ++ " " ++ String.fromFloat midX ++ " " ++ String.fromFloat midY ++ ")")
     ]
 
 
