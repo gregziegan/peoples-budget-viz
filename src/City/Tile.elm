@@ -45,7 +45,7 @@ attrs tile =
                     -180
 
                 RThreeQuarters ->
-                    0
+                    -180
 
         ( originX, originY ) =
             ( 7, 1 )

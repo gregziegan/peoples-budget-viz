@@ -58,8 +58,6 @@ generateOneOf : ( Int, Int ) -> ( Road, List Road )
 generateOneOf _ =
     ( Road Straight RNone
     , [ Road Straight RQuarter
-      , Road Straight RNone
-      , Road Straight RQuarter
       , Road Corner RNone
       , Road Corner RQuarter
       , Road Corner RHalf
@@ -101,22 +99,13 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Junction, _ ) ->
-                    True
-
                 ( Corner, RNone ) ->
                     True
 
                 ( Corner, RQuarter ) ->
                     True
 
-                ( Tee, RNone ) ->
-                    True
-
                 ( Tee, RQuarter ) ->
-                    True
-
-                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -130,22 +119,13 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Junction, _ ) ->
-                    True
-
                 ( Corner, RNone ) ->
                     True
 
                 ( Corner, RQuarter ) ->
                     True
 
-                ( Tee, RNone ) ->
-                    True
-
                 ( Tee, RQuarter ) ->
-                    True
-
-                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -159,10 +139,19 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
+                ( Junction, _ ) ->
+                    True
+
                 ( Corner, RHalf ) ->
                     True
 
                 ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -179,10 +168,19 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
+                ( Junction, _ ) ->
+                    True
+
                 ( Corner, RHalf ) ->
                     True
 
                 ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -200,19 +198,10 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Junction, _ ) ->
-                    True
-
                 ( Corner, RHalf ) ->
                     True
 
                 ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( Tee, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -229,19 +218,10 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Junction, _ ) ->
-                    True
-
                 ( Corner, RHalf ) ->
                     True
 
                 ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( Tee, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -258,13 +238,22 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
+                ( Junction, _ ) ->
+                    True
+
                 ( Corner, RNone ) ->
                     True
 
                 ( Corner, RQuarter ) ->
                     True
 
+                ( Tee, RNone ) ->
+                    True
+
                 ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -278,13 +267,22 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
+                ( Junction, _ ) ->
+                    True
+
                 ( Corner, RNone ) ->
                     True
 
                 ( Corner, RQuarter ) ->
                     True
 
+                ( Tee, RNone ) ->
+                    True
+
                 ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -297,46 +295,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Straight, RHalf ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( Straight, RHalf, East ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( Straight, RQuarter, East ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
-                    True
-
-                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -360,12 +318,12 @@ validJunction neighborDirection self neighbor =
                 _ ->
                     False
 
-        ( Straight, RThreeQuarters, East ) ->
+        ( Straight, RHalf, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -381,6 +339,46 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RQuarter, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Straight, RThreeQuarters, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -398,13 +396,22 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Corner, RNone ) ->
+                ( Junction, _ ) ->
                     True
 
-                ( Corner, RThreeQuarters ) ->
+                ( Corner, RQuarter ) ->
                     True
 
-                ( Tee, RNone ) ->
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -418,13 +425,22 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Corner, RNone ) ->
+                ( Junction, _ ) ->
                     True
 
-                ( Corner, RThreeQuarters ) ->
+                ( Corner, RQuarter ) ->
                     True
 
-                ( Tee, RNone ) ->
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -438,22 +454,13 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
-                ( Junction, _ ) ->
+                ( Corner, RNone ) ->
                     True
 
-                ( Corner, RQuarter ) ->
+                ( Corner, RThreeQuarters ) ->
                     True
 
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Tee, RQuarter ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                ( Tee, RThreeQuarters ) ->
+                ( Tee, RNone ) ->
                     True
 
                 _ ->
@@ -467,22 +474,13 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
-                ( Junction, _ ) ->
+                ( Corner, RNone ) ->
                     True
 
-                ( Corner, RQuarter ) ->
+                ( Corner, RThreeQuarters ) ->
                     True
 
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Tee, RQuarter ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                ( Tee, RThreeQuarters ) ->
+                ( Tee, RNone ) ->
                     True
 
                 _ ->
@@ -498,10 +496,19 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
+                ( Junction, _ ) ->
+                    True
+
                 ( Corner, RHalf ) ->
                     True
 
                 ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -518,10 +525,19 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
+                ( Junction, _ ) ->
+                    True
+
                 ( Corner, RHalf ) ->
                     True
 
                 ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -538,22 +554,13 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Junction, _ ) ->
-                    True
-
                 ( Corner, RNone ) ->
                     True
 
                 ( Corner, RQuarter ) ->
                     True
 
-                ( Tee, RNone ) ->
-                    True
-
                 ( Tee, RQuarter ) ->
-                    True
-
-                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -567,22 +574,13 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Junction, _ ) ->
-                    True
-
                 ( Corner, RNone ) ->
                     True
 
                 ( Corner, RQuarter ) ->
                     True
 
-                ( Tee, RNone ) ->
-                    True
-
                 ( Tee, RQuarter ) ->
-                    True
-
-                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -597,19 +595,10 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Junction, _ ) ->
-                    True
-
                 ( Corner, RHalf ) ->
                     True
 
                 ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( Tee, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -626,19 +615,10 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Junction, _ ) ->
-                    True
-
                 ( Corner, RHalf ) ->
                     True
 
                 ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( Tee, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -655,13 +635,22 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
+                ( Junction, _ ) ->
+                    True
+
                 ( Corner, RNone ) ->
                     True
 
                 ( Corner, RQuarter ) ->
                     True
 
+                ( Tee, RNone ) ->
+                    True
+
                 ( Tee, RQuarter ) ->
+                    True
+
+                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -675,31 +664,19 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
+                ( Junction, _ ) ->
+                    True
+
                 ( Corner, RNone ) ->
                     True
 
                 ( Corner, RQuarter ) ->
                     True
 
+                ( Tee, RNone ) ->
+                    True
+
                 ( Tee, RQuarter ) ->
-                    True
-
-                _ ->
-                    False
-
-        -- Corner, East neighbor
-        ( Corner, RNone, East ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Corner, RHalf ) ->
                     True
 
                 ( Tee, RHalf ) ->
@@ -708,12 +685,33 @@ validJunction neighborDirection self neighbor =
                 _ ->
                     False
 
-        ( Corner, RQuarter, East ) ->
+        -- Corner, East neighbor
+        ( Corner, RNone, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
                 ( Straight, RQuarter ) ->
                     True
 
                 ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Corner, RQuarter, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -739,10 +737,10 @@ validJunction neighborDirection self neighbor =
 
         ( Corner, RHalf, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -768,10 +766,10 @@ validJunction neighborDirection self neighbor =
 
         ( Corner, RThreeQuarters, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Corner, RQuarter ) ->
@@ -780,16 +778,19 @@ validJunction neighborDirection self neighbor =
                 ( Corner, RHalf ) ->
                     True
 
+                ( Tee, RThreeQuarters ) ->
+                    True
+
                 _ ->
                     False
 
         -- Corner, West neighbor
         ( Corner, RNone, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -815,10 +816,10 @@ validJunction neighborDirection self neighbor =
 
         ( Corner, RQuarter, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Corner, RNone ) ->
@@ -835,10 +836,10 @@ validJunction neighborDirection self neighbor =
 
         ( Corner, RHalf, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Corner, RNone ) ->
@@ -855,10 +856,10 @@ validJunction neighborDirection self neighbor =
 
         ( Corner, RThreeQuarters, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -886,28 +887,28 @@ validJunction neighborDirection self neighbor =
         -- Junction, North neighbor
         ( Junction, RNone, North ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RNone ) ->
+                ( Corner, RHalf ) ->
                     True
 
-                ( Corner, RQuarter ) ->
+                ( Corner, RThreeQuarters ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RQuarter ) ->
+                ( Tee, RHalf ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -915,28 +916,28 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RQuarter, North ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RNone ) ->
+                ( Corner, RHalf ) ->
                     True
 
-                ( Corner, RQuarter ) ->
+                ( Corner, RThreeQuarters ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RQuarter ) ->
+                ( Tee, RHalf ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -944,28 +945,28 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RHalf, North ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RNone ) ->
+                ( Corner, RHalf ) ->
                     True
 
-                ( Corner, RQuarter ) ->
+                ( Corner, RThreeQuarters ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RQuarter ) ->
+                ( Tee, RHalf ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -973,28 +974,28 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RThreeQuarters, North ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RNone ) ->
+                ( Corner, RHalf ) ->
                     True
 
-                ( Corner, RQuarter ) ->
+                ( Corner, RThreeQuarters ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RQuarter ) ->
+                ( Tee, RHalf ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -1003,28 +1004,28 @@ validJunction neighborDirection self neighbor =
         -- Junction, South neighbor
         ( Junction, RNone, South ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RHalf ) ->
+                ( Corner, RNone ) ->
                     True
 
-                ( Corner, RThreeQuarters ) ->
+                ( Corner, RQuarter ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RQuarter ) ->
                     True
 
-                ( Tee, RThreeQuarters ) ->
+                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -1032,28 +1033,28 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RQuarter, South ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RHalf ) ->
+                ( Corner, RNone ) ->
                     True
 
-                ( Corner, RThreeQuarters ) ->
+                ( Corner, RQuarter ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RQuarter ) ->
                     True
 
-                ( Tee, RThreeQuarters ) ->
+                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -1061,28 +1062,28 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RHalf, South ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RHalf ) ->
+                ( Corner, RNone ) ->
                     True
 
-                ( Corner, RThreeQuarters ) ->
+                ( Corner, RQuarter ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RQuarter ) ->
                     True
 
-                ( Tee, RThreeQuarters ) ->
+                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -1090,28 +1091,28 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RThreeQuarters, South ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RHalf ) ->
+                ( Corner, RNone ) ->
                     True
 
-                ( Corner, RThreeQuarters ) ->
+                ( Corner, RQuarter ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RQuarter ) ->
                     True
 
-                ( Tee, RThreeQuarters ) ->
+                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -1120,10 +1121,10 @@ validJunction neighborDirection self neighbor =
         -- Junction, East neighbor
         ( Junction, RNone, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1149,10 +1150,10 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RQuarter, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1178,10 +1179,10 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RHalf, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1207,10 +1208,10 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RThreeQuarters, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1237,10 +1238,10 @@ validJunction neighborDirection self neighbor =
         -- Junction, West neighbor
         ( Junction, RNone, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1266,10 +1267,10 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RQuarter, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1295,10 +1296,10 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RHalf, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1324,10 +1325,10 @@ validJunction neighborDirection self neighbor =
 
         ( Junction, RThreeQuarters, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1355,28 +1356,28 @@ validJunction neighborDirection self neighbor =
         -- Tee, North neighbor
         ( Tee, RNone, North ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RNone ) ->
+                ( Corner, RHalf ) ->
                     True
 
-                ( Corner, RQuarter ) ->
+                ( Corner, RThreeQuarters ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RQuarter ) ->
+                ( Tee, RHalf ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -1390,10 +1391,19 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
+                ( Junction, _ ) ->
+                    True
+
                 ( Corner, RHalf ) ->
                     True
 
                 ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
+                    True
+
+                ( Tee, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -1404,28 +1414,28 @@ validJunction neighborDirection self neighbor =
 
         ( Tee, RHalf, North ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RNone ) ->
+                ( Corner, RHalf ) ->
                     True
 
-                ( Corner, RQuarter ) ->
+                ( Corner, RThreeQuarters ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RQuarter ) ->
+                ( Tee, RHalf ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -1439,6 +1449,27 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Tee, RQuarter ) ->
+                    True
+
+                _ ->
+                    False
+
+        -- Tee, South neighbor
+        ( Tee, RNone, South ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
                 ( Junction, _ ) ->
                     True
 
@@ -1455,36 +1486,6 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RHalf ) ->
-                    True
-
-                _ ->
-                    False
-
-        -- Tee, South neighbor
-        ( Tee, RNone, South ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Junction, _ ) ->
-                    True
-
-                ( Corner, RHalf ) ->
-                    True
-
-                ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( Tee, RHalf ) ->
-                    True
-
-                ( Tee, RThreeQuarters ) ->
                     True
 
                 _ ->
@@ -1498,19 +1499,10 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Junction, _ ) ->
-                    True
-
                 ( Corner, RHalf ) ->
                     True
 
                 ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                ( Tee, RHalf ) ->
                     True
 
                 ( Tee, RThreeQuarters ) ->
@@ -1521,28 +1513,28 @@ validJunction neighborDirection self neighbor =
 
         ( Tee, RHalf, South ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
+                ( Straight, RQuarter ) ->
                     True
 
-                ( Straight, RHalf ) ->
+                ( Straight, RThreeQuarters ) ->
                     True
 
                 ( Junction, _ ) ->
                     True
 
-                ( Corner, RHalf ) ->
+                ( Corner, RNone ) ->
                     True
 
-                ( Corner, RThreeQuarters ) ->
+                ( Corner, RQuarter ) ->
                     True
 
                 ( Tee, RNone ) ->
                     True
 
-                ( Tee, RHalf ) ->
+                ( Tee, RQuarter ) ->
                     True
 
-                ( Tee, RThreeQuarters ) ->
+                ( Tee, RHalf ) ->
                     True
 
                 _ ->
@@ -1556,31 +1548,19 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RThreeQuarters ) ->
                     True
 
+                ( Junction, _ ) ->
+                    True
+
                 ( Corner, RNone ) ->
                     True
 
                 ( Corner, RQuarter ) ->
                     True
 
+                ( Tee, RNone ) ->
+                    True
+
                 ( Tee, RQuarter ) ->
-                    True
-
-                _ ->
-                    False
-
-        -- Tee, East neighbor
-        ( Tee, RNone, East ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RNone ) ->
-                    True
-
-                ( Straight, RHalf ) ->
-                    True
-
-                ( Corner, RQuarter ) ->
-                    True
-
-                ( Corner, RHalf ) ->
                     True
 
                 ( Tee, RHalf ) ->
@@ -1589,12 +1569,33 @@ validJunction neighborDirection self neighbor =
                 _ ->
                     False
 
-        ( Tee, RQuarter, East ) ->
+        -- Tee, East neighbor
+        ( Tee, RNone, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
                 ( Straight, RQuarter ) ->
                     True
 
                 ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RQuarter ) ->
+                    True
+
+                ( Corner, RHalf ) ->
+                    True
+
+                ( Tee, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RQuarter, East ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RNone ) ->
+                    True
+
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1620,10 +1621,10 @@ validJunction neighborDirection self neighbor =
 
         ( Tee, RHalf, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1649,10 +1650,10 @@ validJunction neighborDirection self neighbor =
 
         ( Tee, RThreeQuarters, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1679,10 +1680,10 @@ validJunction neighborDirection self neighbor =
         -- Tee, West neighbor
         ( Tee, RNone, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1708,10 +1709,10 @@ validJunction neighborDirection self neighbor =
 
         ( Tee, RQuarter, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
+                ( Straight, RNone ) ->
                     True
 
-                ( Straight, RThreeQuarters ) ->
+                ( Straight, RHalf ) ->
                     True
 
                 ( Junction, _ ) ->
@@ -1743,26 +1744,6 @@ validJunction neighborDirection self neighbor =
                 ( Straight, RHalf ) ->
                     True
 
-                ( Corner, RNone ) ->
-                    True
-
-                ( Corner, RThreeQuarters ) ->
-                    True
-
-                ( Tee, RNone ) ->
-                    True
-
-                _ ->
-                    False
-
-        ( Tee, RThreeQuarters, West ) ->
-            case ( neighbor.style, neighbor.rotation ) of
-                ( Straight, RQuarter ) ->
-                    True
-
-                ( Straight, RThreeQuarters ) ->
-                    True
-
                 ( Junction, _ ) ->
                     True
 
@@ -1779,6 +1760,26 @@ validJunction neighborDirection self neighbor =
                     True
 
                 ( Tee, RThreeQuarters ) ->
+                    True
+
+                _ ->
+                    False
+
+        ( Tee, RThreeQuarters, West ) ->
+            case ( neighbor.style, neighbor.rotation ) of
+                ( Straight, RQuarter ) ->
+                    True
+
+                ( Straight, RThreeQuarters ) ->
+                    True
+
+                ( Corner, RNone ) ->
+                    True
+
+                ( Corner, RThreeQuarters ) ->
+                    True
+
+                ( Tee, RNone ) ->
                     True
 
                 _ ->
@@ -1849,6 +1850,9 @@ cellStyleToString style =
 
         Corner ->
             "Corner"
+
+        --Crosswalk ->
+            --"Crosswalk"
 
 
 drawTile : ( Int, Int ) -> ( Road, List Road ) -> Svg msg
