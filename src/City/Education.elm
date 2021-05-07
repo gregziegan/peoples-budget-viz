@@ -7,7 +7,7 @@ import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
 
 highSchool : Tile -> Svg msg
 highSchool tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 61.625 58.846" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 61.625 58.846" ])
         [ path [ d "M15.622 21.603l15.447-9.734-15.44-10.09L.147 11.513z", fill "#d9a371" ]
             []
         , path [ d "M15.633 39.024l-.046-17.42 15.482-9.735v17.464z", fill "#d9a371" ]

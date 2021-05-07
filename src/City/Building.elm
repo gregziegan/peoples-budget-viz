@@ -50,7 +50,7 @@ view tile buildingType =
 
 skyscraper : Tile -> Svg msg
 skyscraper tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 55.761 92.043" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 55.761 92.043" ])
         [ path [ fill "#37568c", d "M1.78 47.643v27.988l26.1 16.412V64.056L1.78 47.643" ]
             []
         , path [ fill "#2e3c59", d "M53.982 47.643v27.988L27.88 92.043V64.056l26.102-16.413" ]
@@ -130,7 +130,7 @@ skyscraper tile =
 
 shop : Tile -> Svg msg
 shop tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 38.456 44.056" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 38.456 44.056" ])
         [ path [ d "M.563 15.763v17.942l13.367 8.513V24.276L.563 15.763", fill "#eec169" ]
             []
         , path [ d "M13.93 24.276L7.247 13.042l-6.684 2.72z", fill "#eec169" ]
@@ -548,7 +548,7 @@ departmentStore tile =
 
 smallMultiuse : Tile -> Svg msg
 smallMultiuse tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 41.161 46.245" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 41.161 46.245" ])
         [ path [ d "M20.61 26.617L.952 14.255 20.61 1.895l19.659 12.36L20.61 26.617", fill "#bd7f42" ]
             []
         , path [ d "M20.61 26.617l.094-.15-19.42-12.212L20.61 2.102l19.327 12.153-19.42 12.213.093.149.094-.15-.094.15.094.149 19.658-12.362a.176.176 0 0 0 0-.298L20.704 1.745a.175.175 0 0 0-.188 0L.858 14.105a.176.176 0 0 0 0 .3l19.658 12.361c.058.036.13.036.188 0l-.094-.15", fill "#53412f" ]
@@ -728,7 +728,7 @@ smallMultiuse tile =
 
 mediumMultiuse : Tile -> Svg msg
 mediumMultiuse tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 49.267 50.232" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 49.267 50.232" ])
         [ path [ d "M24.633 31.484L1.026 16.638 24.633 1.794l23.608 14.844-23.608 14.846", fill "#fff" ]
             []
         , path [ d "M24.633 31.484l.094-.15-23.37-14.696L24.633 2.002 47.91 16.638 24.54 31.335l.093.149.094-.15-.094.15.094.15 23.608-14.846a.176.176 0 0 0 0-.299L24.727 1.644a.175.175 0 0 0-.187 0L.932 16.49a.176.176 0 0 0 0 .299L24.54 31.634c.057.036.13.036.187 0l-.094-.15", fill "#53412f" ]
@@ -1112,7 +1112,7 @@ mediumMultiuse tile =
 
 grocery : Tile -> Svg msg
 grocery tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 36.123 36.872" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 36.123 36.872" ])
         [ defs []
             [ clipPath [ clipPathUnits "userSpaceOnUse", id "a" ]
                 [ path [ d "M2320.12 4033.24l-56.6 34.59-20.98 105.81 26.34-16.77v-.07l10.73-6.84v.08l14.69-9.36 2.15-1.37 23.67-106.07" ]
@@ -1418,7 +1418,7 @@ grocery tile =
 
 fastFood : Tile -> Svg msg
 fastFood tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 45.49 38.875" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 45.49 38.875" ])
         [ defs []
             [ clipPath [ clipPathUnits "userSpaceOnUse", id "a" ]
                 [ path [ d "M112.614 607.156h10.133v-22.519h-10.133z" ]
@@ -1662,7 +1662,7 @@ fastFood tile =
 
 office : Tile -> Svg msg
 office tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 52.997 58.702" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 52.997 58.702" ])
         [ path [ d "M20.513 33.178L52.997 12.9 32.483 0 0 20.28z", fill "#c8ba9e" ]
             []
         , path [ d "M52.997 38.423V12.9L20.513 33.18v25.523z", fill "#81785b" ]
@@ -1906,7 +1906,7 @@ office tile =
 
 largeOffice : Tile -> Svg msg
 largeOffice tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 69.712 72.818" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 69.712 72.818" ])
         [ defs []
             [ clipPath [ clipPathUnits "userSpaceOnUse", id "a" ]
                 [ path [ d "M475.488 812.535h.429v-69.212h-.429z" ]

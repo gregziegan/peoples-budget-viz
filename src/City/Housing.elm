@@ -45,7 +45,7 @@ view tile housingType =
 
 largeHouse : Tile -> Svg msg
 largeHouse tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 47.452 40.632" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 47.452 40.632" ])
         [ path [ d "M.689 10.23v10.893l12.977 8.16V18.389L.689 10.23", fill "#496cb0" ]
             []
         , path [ d "M22.907 9.832L7.211 0 .689 10.275l12.977 8.16 9.241-8.603", fill "#992628" ]
@@ -185,7 +185,7 @@ largeHouse tile =
 
 house : Tile -> Svg msg
 house tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 31.951 31.77" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 31.951 31.77" ])
         [ path [ d "M15.962 21.57L.778 12.023l15.184-9.547 15.184 9.547-15.184 9.549", fill "#c2695d" ]
             []
         , path [ d "M15.996 31.77V21.572L.813 12.024v10.199l15.183 9.547", fill "#c2695d" ]
@@ -311,7 +311,7 @@ house tile =
 
 medApartment : Tile -> Svg msg
 medApartment tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 34.712 57.297" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 34.712 57.297" ])
         [ path [ d "M1.108 29.658v17.423l16.248 10.216V39.875z", fill "#355b88" ]
             []
         , path [ d "M33.604 29.658v17.423L17.356 57.297V39.875z", fill "#30425c" ]
@@ -557,7 +557,7 @@ medApartment tile =
 
 brownApartment : Tile -> Svg msg
 brownApartment tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 35.544 61.699" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 35.544 61.699" ])
         [ defs []
             [ clipPath [ clipPathUnits "userSpaceOnUse", id "a" ]
                 [ path [ d "M218.318 1026.79h4.705v-6.27h-4.705z" ]
@@ -1271,7 +1271,7 @@ brownApartment tile =
 
 greenApartment : Tile -> Svg msg
 greenApartment tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 34.826 61.699" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 34.826 61.699" ])
         [ path [ d "M17.414 14.805L5.642 7.403 17.414 0l11.772 7.403zM0 50.75V16.117l17.413 10.949v34.633z", fill "#86836b" ]
             []
         , path [ d "M0 16.117l5.642-8.714 11.771 7.402v12.26z", fill "#4c3320" ]
@@ -1491,7 +1491,7 @@ greenApartment tile =
 
 yellowApartment : Tile -> Svg msg
 yellowApartment tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 33.597 62.866" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 33.597 62.866" ])
         [ path [ d "M15.605 25.375L0 15.636 17.993 4.322l15.604 9.738z", fill "#6c4d2a" ]
             []
         , path [ d "M0 53.128V15.635l15.605 9.738v37.493z", fill "#d5b480" ]
