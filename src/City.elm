@@ -1,4 +1,4 @@
-module City exposing (Budget, City, changeBudget, generate, init, initialBudget, visualization)
+module City exposing (Budget, City, CityTile, changeBudget, generate, init, initialBudget, visualization)
 
 import City.Building as Building exposing (BuildingType(..))
 import City.Education as Education
@@ -26,6 +26,11 @@ type alias City =
     }
 
 
+type CityTile
+    = Connecting Road
+    | EmptyPlot
+
+
 init :
     { parks : Int
     , housing : Int
@@ -42,40 +47,47 @@ initialBudget =
 
 
 cityWidth =
-    6
+    15
 
 
 cityHeight =
-    6
+    15
 
 
-generate : Seed -> ( Board Road, Seed )
+generate : Seed -> ( Board CityTile, Seed )
 generate seed =
     Tiler.generateBoard cityWidth cityHeight generateOneOf validateNeighbors seed
 
 
-generateOneOf : ( Int, Int ) -> ( Road, List Road )
+generateOneOf : ( Int, Int ) -> ( CityTile, List CityTile )
 generateOneOf _ =
-    ( Road Straight RNone
-    , [ Road Straight RQuarter
-      , Road Corner RNone
-      , Road Corner RQuarter
-      , Road Corner RHalf
-      , Road Corner RThreeQuarters
-      , Road Junction RNone
-      , Road Tee RNone
-      , Road Tee RQuarter
-      , Road Tee RHalf
-      , Road Tee RThreeQuarters
+    ( Connecting (Road Straight RNone)
+    , [ Connecting (Road Straight RQuarter)
+      , Connecting (Road Corner RNone)
+      , Connecting (Road Corner RQuarter)
+      , Connecting (Road Corner RHalf)
+      , Connecting (Road Corner RThreeQuarters)
+      , Connecting (Road Junction RNone)
+      , Connecting (Road Tee RNone)
+      , Connecting (Road Tee RQuarter)
+      , Connecting (Road Tee RHalf)
+      , Connecting (Road Tee RThreeQuarters)
+      , EmptyPlot
+      , EmptyPlot
+      , EmptyPlot
+      , EmptyPlot
+      , EmptyPlot
+      , EmptyPlot
+      , EmptyPlot
       ]
     )
 
 
-validateNeighbors : List Road -> List Road -> Neighbor -> ( Road, List Road )
+validateNeighbors : List CityTile -> List CityTile -> Neighbor -> ( CityTile, List CityTile )
 validateNeighbors possibleThisTiles possibleNeighbors neighborDirection =
     let
         filteredPossibilities =
-            List.filter (\neigh -> List.any (\self -> validJunction neighborDirection self neigh) possibleThisTiles) possibleNeighbors
+            List.filter (\neigh -> List.any (\self -> validTile neighborDirection self neigh) possibleThisTiles) possibleNeighbors
     in
     case filteredPossibilities of
         t :: others ->
@@ -83,7 +95,238 @@ validateNeighbors possibleThisTiles possibleNeighbors neighborDirection =
 
         [] ->
             -- TODO: Find a way to never reach this
-            ( Road Straight RNone, [] )
+            ( EmptyPlot, [] )
+
+
+flipDirection direction =
+    case direction of
+        North ->
+            South
+
+        West ->
+            East
+
+        South ->
+            North
+
+        East ->
+            West
+
+
+validPlot : Neighbor -> Road -> Bool
+validPlot neighborDirection road =
+    case ( road.style, road.rotation, neighborDirection ) of
+        ( Straight, RNone, North ) ->
+            True
+
+        ( Straight, RHalf, North ) ->
+            True
+
+        ( Straight, RQuarter, North ) ->
+            False
+
+        ( Straight, RThreeQuarters, North ) ->
+            False
+
+        ( Straight, RNone, South ) ->
+            True
+
+        ( Straight, RHalf, South ) ->
+            True
+
+        ( Straight, RQuarter, South ) ->
+            False
+
+        ( Straight, RThreeQuarters, South ) ->
+            False
+
+        ( Straight, RNone, West ) ->
+            False
+
+        ( Straight, RHalf, West ) ->
+            False
+
+        ( Straight, RQuarter, West ) ->
+            True
+
+        ( Straight, RThreeQuarters, West ) ->
+            True
+
+        ( Straight, RNone, East ) ->
+            False
+
+        ( Straight, RHalf, East ) ->
+            False
+
+        ( Straight, RQuarter, East ) ->
+            True
+
+        ( Straight, RThreeQuarters, East ) ->
+            True
+
+        ( Corner, RNone, North ) ->
+            False
+
+        ( Corner, RHalf, North ) ->
+            True
+
+        ( Corner, RQuarter, North ) ->
+            True
+
+        ( Corner, RThreeQuarters, North ) ->
+            False
+
+        ( Corner, RNone, South ) ->
+            True
+
+        ( Corner, RHalf, South ) ->
+            False
+
+        ( Corner, RQuarter, South ) ->
+            False
+
+        ( Corner, RThreeQuarters, South ) ->
+            True
+
+        ( Corner, RNone, West ) ->
+            False
+
+        ( Corner, RHalf, West ) ->
+            True
+
+        ( Corner, RQuarter, West ) ->
+            False
+
+        ( Corner, RThreeQuarters, West ) ->
+            True
+
+        ( Corner, RNone, East ) ->
+            True
+
+        ( Corner, RHalf, East ) ->
+            False
+
+        ( Corner, RQuarter, East ) ->
+            True
+
+        ( Corner, RThreeQuarters, East ) ->
+            False
+
+        ( Junction, RNone, North ) ->
+            False
+
+        ( Junction, RHalf, North ) ->
+            False
+
+        ( Junction, RQuarter, North ) ->
+            False
+
+        ( Junction, RThreeQuarters, North ) ->
+            False
+
+        ( Junction, RNone, South ) ->
+            False
+
+        ( Junction, RHalf, South ) ->
+            False
+
+        ( Junction, RQuarter, South ) ->
+            False
+
+        ( Junction, RThreeQuarters, South ) ->
+            False
+
+        ( Junction, RNone, West ) ->
+            False
+
+        ( Junction, RHalf, West ) ->
+            False
+
+        ( Junction, RQuarter, West ) ->
+            False
+
+        ( Junction, RThreeQuarters, West ) ->
+            False
+
+        ( Junction, RNone, East ) ->
+            False
+
+        ( Junction, RHalf, East ) ->
+            False
+
+        ( Junction, RQuarter, East ) ->
+            False
+
+        ( Junction, RThreeQuarters, East ) ->
+            False
+
+        ( Tee, RNone, North ) ->
+            False
+
+        ( Tee, RHalf, North ) ->
+            False
+
+        ( Tee, RQuarter, North ) ->
+            True
+
+        ( Tee, RThreeQuarters, North ) ->
+            False
+
+        ( Tee, RNone, South ) ->
+            False
+
+        ( Tee, RHalf, South ) ->
+            False
+
+        ( Tee, RQuarter, South ) ->
+            False
+
+        ( Tee, RThreeQuarters, South ) ->
+            True
+
+        ( Tee, RNone, West ) ->
+            False
+
+        ( Tee, RHalf, West ) ->
+            True
+
+        ( Tee, RQuarter, West ) ->
+            True
+
+        ( Tee, RThreeQuarters, West ) ->
+            False
+
+        ( Tee, RNone, East ) ->
+            True
+
+        ( Tee, RHalf, East ) ->
+            False
+
+        ( Tee, RQuarter, East ) ->
+            False
+
+        ( Tee, RThreeQuarters, East ) ->
+            False
+
+
+validTile : Neighbor -> CityTile -> CityTile -> Bool
+validTile neighborDirection self neighbor =
+    case ( self, neighborDirection ) of
+        ( Connecting road, _ ) ->
+            case neighbor of
+                Connecting neighborRoad ->
+                    validJunction neighborDirection road neighborRoad
+
+                EmptyPlot ->
+                    validPlot neighborDirection road
+
+        ( EmptyPlot, _ ) ->
+            case neighbor of
+                Connecting neighborRoad ->
+                    validPlot (flipDirection neighborDirection) neighborRoad
+
+                EmptyPlot ->
+                    True
 
 
 validJunction : Neighbor -> Road -> Road -> Bool
@@ -1822,13 +2065,24 @@ viewTile tile tileType =
             Tile.blank tile
 
 
-drawRoad : ( Int, Int ) -> Road -> Svg msg
-drawRoad ( x, y ) { style, rotation } =
-    let
-        tile =
-            Tile.default ( x, y ) rotation
-    in
+drawRoad : Tile -> Road -> Svg msg
+drawRoad tile { style } =
     Road.view tile style
+
+
+drawCityTile : ( Int, Int ) -> CityTile -> Svg msg
+drawCityTile ( x, y ) cityTile =
+    case cityTile of
+        EmptyPlot ->
+            -- Housing.view { width = 90, height = 90, rotation = RNone, x = x - 1, y = y - 1 } (TallApartment 0)
+            Tile.blank (Tile.default ( x, y ) RNone)
+
+        Connecting ({ rotation } as road) ->
+            let
+                tile =
+                    Tile.default ( x, y ) rotation
+            in
+            drawRoad tile road
 
 
 drawUndecided : ( Int, Int ) -> String -> Svg msg
@@ -1836,36 +2090,43 @@ drawUndecided position style =
     Tile.blank (Tile.default position RNone)
 
 
-cellStyleToString : RoadType -> String
-cellStyleToString style =
-    case style of
-        Straight ->
-            "Straight"
+cityTileToString : CityTile -> String
+cityTileToString cityTile =
+    case cityTile of
+        EmptyPlot ->
+            "Empty Plot"
 
-        Junction ->
-            "Junction"
+        Connecting { style } ->
+            case style of
+                Straight ->
+                    "Straight"
 
-        Tee ->
-            "Tee"
+                Junction ->
+                    "Junction"
 
-        Corner ->
-            "Corner"
+                Tee ->
+                    "Tee"
 
-        --Crosswalk ->
-            --"Crosswalk"
+                Corner ->
+                    "Corner"
 
 
-drawTile : ( Int, Int ) -> ( Road, List Road ) -> Svg msg
-drawTile pos ( road, roads ) =
-    case roads of
+
+--Crosswalk ->
+--"Crosswalk"
+
+
+drawTile : ( Int, Int ) -> ( CityTile, List CityTile ) -> Svg msg
+drawTile pos ( cityTile, cityTiles ) =
+    case cityTiles of
         [] ->
-            drawRoad pos road
+            drawCityTile pos cityTile
 
         _ ->
-            drawUndecided pos (String.join "\n" (List.map (\{ style } -> cellStyleToString style) (road :: roads)))
+            drawUndecided pos (String.join "\n" (List.map cityTileToString (cityTile :: cityTiles)))
 
 
-visualization : Board Road -> City -> Element msg
+visualization : Board CityTile -> City -> Element msg
 visualization board city =
     Element.column [ Element.centerX ]
         [ Element.el [ Element.width shrink, Element.height shrink ]

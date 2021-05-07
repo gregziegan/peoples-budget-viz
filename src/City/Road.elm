@@ -10,7 +10,10 @@ type RoadType
     | Tee -- West <-> North <-> South intersection
     | Junction -- 4 way intersection
     | Straight --  West <-> East
-    --| Crosswalk -- West <-> East with a crosswalk
+
+
+
+--| Crosswalk -- West <-> East with a crosswalk
 
 
 type alias Road =
@@ -61,8 +64,10 @@ view tile roadType =
             else
                 straight tile
 
-        --Crosswalk ->
-            --crosswalk tile   --todo: add crosswalk alt
+
+
+--Crosswalk ->
+--crosswalk tile   --todo: add crosswalk alt
 
 
 threeWayIntersection : Tile -> Svg msg
@@ -219,6 +224,7 @@ crosswalk tile =
         , path [ fill "#fff", d "M26.56 25.886l1.705-1.255-8.467-5.47-1.704 1.254 8.467 5.47M29.132 24.148l1.704-1.255-8.466-5.47-1.704 1.253 8.466 5.472M31.648 22.661l1.704-1.254-8.47-5.47-1.705 1.253 8.47 5.471M34.22 21.007l1.703-1.255-8.47-5.47-1.704 1.254 8.47 5.47M36.629 19.525l1.704-1.254-8.47-5.47-1.704 1.253 8.47 5.471M39.003 17.935l1.704-1.255-8.467-5.47-1.704 1.254 8.467 5.47" ]
             []
         ]
+
 
 
 --todo: add crosswalk alt

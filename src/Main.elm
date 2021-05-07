@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser exposing (Document)
 import Browser.Events exposing (onAnimationFrameDelta)
-import City exposing (City)
+import City exposing (City, CityTile)
 import City.Road exposing (Road, RoadType(..))
 import Color
 import Data.Author as Author
@@ -132,7 +132,7 @@ type alias Model =
     { city : City
     , budget : City.Budget
     , randomSeed : Seed
-    , board : Board Road
+    , board : Board CityTile
     }
 
 
