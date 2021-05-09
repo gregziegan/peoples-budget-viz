@@ -31,11 +31,11 @@ default ( x, y ) rotation =
 
 
 originX =
-    3
+    0
 
 
 originY =
-    10
+    7
 
 
 offset : Tile -> ( Int, Int )
