@@ -58,9 +58,9 @@ generateOneOf : ( Int, Int ) -> ( Road, List Road )
 generateOneOf _ =
     ( Road (Straight { hasCrosswalk = False }) RNone
     , [ Road (Straight { hasCrosswalk = False }) RQuarter
+      , Road (Straight { hasCrosswalk = True }) RNone
+      , Road (Straight { hasCrosswalk = True }) RQuarter
 
-      --   , Road (Straight { hasCrosswalk = True }) RNone
-      --   , Road (Straight { hasCrosswalk = True }) RQuarter
       --   , Road Corner RNone
       --   , Road Corner RQuarter
       --   , Road Corner RHalf
