@@ -84,7 +84,7 @@ rotate tile =
             -- (y * 60) +
             tile.height // 2
     in
-    [ transform ("rotate(" ++ String.fromInt rotInDeg ++ " " ++ String.fromInt midX ++ " " ++ String.fromInt midY ++ ")") ]
+    [ Attr.transform ("rotate(" ++ String.fromInt rotInDeg ++ " " ++ String.fromInt midX ++ " " ++ String.fromInt midY ++ ")") ]
 
 
 blank : Tile -> Svg msg

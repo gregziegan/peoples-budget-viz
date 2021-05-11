@@ -841,24 +841,26 @@ parkFromId id =
 
 viewTile : Tile -> TileType -> Svg msg
 viewTile tile tileType =
-    case tileType of
-        Building buildingType ->
-            Building.view tile buildingType
+    Svg.g (Tile.rotate tile)
+        [ case tileType of
+            Building buildingType ->
+                Building.view tile buildingType
 
-        Hospital hospitalType ->
-            Hospital.view tile hospitalType
+            Hospital hospitalType ->
+                Hospital.view tile hospitalType
 
-        Park parkType ->
-            Park.view tile parkType
+            Park parkType ->
+                Park.view tile parkType
 
-        Education ->
-            Education.highSchool tile
+            Education ->
+                Education.highSchool tile
 
-        Housing housingType ->
-            Housing.view tile housingType
+            Housing housingType ->
+                Housing.view tile housingType
 
-        BlankTile ->
-            Tile.blank tile
+            BlankTile ->
+                Tile.blank tile
+        ]
 
 
 drawRoad : ( Int, Int ) -> Road -> Svg msg

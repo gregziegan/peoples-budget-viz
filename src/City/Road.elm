@@ -41,40 +41,42 @@ view tile roadType =
                     True
     in
     svg (Tile.position tile)
-        [ case roadType of
-            Corner ->
-                if useAlt then
-                    cornerAlt tile
-
-                else
-                    corner tile
-
-            Tee ->
-                if useAlt then
-                    teeAlt tile
-
-                else
-                    tee tile
-
-            Junction ->
-                fourWayIntersection tile
-
-            Straight { hasCrosswalk } ->
-                if useAlt then
-                    if hasCrosswalk then
-                        crosswalkAlt tile
+        [ Svg.g (Tile.rotate tile)
+            [ case roadType of
+                Corner ->
+                    if useAlt then
+                        cornerAlt tile
 
                     else
-                        straightAlt tile
+                        corner tile
 
-                else if hasCrosswalk then
-                    crosswalk tile
+                Tee ->
+                    if useAlt then
+                        teeAlt tile
 
-                else
-                    straight tile
+                    else
+                        tee tile
 
-            Empty ->
-                Tile.blank tile
+                Junction ->
+                    fourWayIntersection tile
+
+                Straight { hasCrosswalk } ->
+                    if useAlt then
+                        if hasCrosswalk then
+                            crosswalkAlt tile
+
+                        else
+                            straightAlt tile
+
+                    else if hasCrosswalk then
+                        crosswalk tile
+
+                    else
+                        straight tile
+
+                Empty ->
+                    Tile.blank tile
+            ]
         , Svg.text_ [ Attr.x "100", Attr.y "100", Attr.fontSize "10", fill "red" ] [ Svg.text (String.fromInt tile.x ++ ", " ++ String.fromInt tile.y) ]
         ]
 
@@ -86,7 +88,7 @@ view tile roadType =
 
 teeAlt : Tile -> Svg msg
 teeAlt tile =
-    svg (Tile.rotate tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.565 40.953L0 20.476 32.565 0l32.561 20.476-32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M23.534 35.248l-14.5-9.068 23.467-14.77 14.496 9.066-23.463 14.772" ]
@@ -108,7 +110,7 @@ teeAlt tile =
 
 tee : Tile -> Svg msg
 tee tile =
-    svg (Tile.rotate tile ++ [ viewBox "0 0 65.126 40.952" ])
+    svg [ viewBox "0 0 65.126 40.952" ]
         [ path [ d "M32.561 40.952L0 20.475 32.561 0l32.565 20.475-32.565 20.477", fill "#dcdff0" ]
             []
         , path [ d "M23.53 35.247L9.031 26.18 41.596 5.704l14.496 9.066L23.53 35.247", fill "#a3b7dd" ]
@@ -128,7 +130,7 @@ tee tile =
 
 fourWayIntersection : Tile -> Svg msg
 fourWayIntersection tile =
-    svg (Tile.rotate tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.565 40.953L0 20.476 32.565 0l32.561 20.476-32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M23.53 35.247L9.031 26.181 41.596 5.704l14.5 9.067L23.53 35.247" ]
@@ -170,7 +172,7 @@ corner tile =
 
 cornerAlt : Tile -> Svg msg
 cornerAlt tile =
-    svg (Tile.rotate tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ d "M32.565 0L0 20.477l32.565 20.476 32.561-20.476L32.565 0", fill "#dcdff0" ]
             []
         , path [ d "M32.628 11.409L18.13 20.477l23.467 14.77 14.5-9.066-23.47-14.771", fill "#a3b7dd" ]
@@ -208,7 +210,7 @@ straight tile =
 
 straightAlt : Tile -> Svg msg
 straightAlt tile =
-    svg (Tile.rotate tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ d "M32.565 40.953l32.561-20.477L32.565 0 0 20.476l32.565 20.477", fill "#dcdff0" ]
             []
         , path [ d "M41.596 35.247l14.5-9.066L23.53 5.705 9.031 14.771l32.565 20.476", fill "#a3b7dd" ]
@@ -222,7 +224,7 @@ straightAlt tile =
 
 crosswalk : Tile -> Svg msg
 crosswalk tile =
-    svg (Tile.rotate tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ d "M32.565 40.953L0 20.476 32.565 0l32.561 20.476-32.561 20.477", fill "#dcdff0" ]
             []
         , path [ d "M23.53 35.247L9.035 26.181 41.596 5.705l14.5 9.066L23.53 35.247", fill "#a3b7dd" ]
@@ -242,7 +244,7 @@ crosswalk tile =
 
 crosswalkAlt : Tile -> Svg msg
 crosswalkAlt tile =
-    svg (Tile.rotate tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.561 40.953l32.565-20.477L32.561 0 0 20.476l32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M41.592 35.248l14.5-9.067L23.53 5.705 9.031 14.771l32.561 20.477" ]
