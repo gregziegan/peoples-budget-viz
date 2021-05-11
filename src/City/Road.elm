@@ -150,7 +150,7 @@ fourWayIntersection tile =
 
 corner : Tile -> Svg msg
 corner tile =
-    svg (Tile.rotate tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.561 40.953l32.565-20.477L32.561 0 0 20.476l32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M32.498 29.544l14.5-9.068L23.53 5.706 9.031 14.77l23.467 14.773" ]
