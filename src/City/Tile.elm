@@ -1,4 +1,4 @@
-module City.Tile exposing (Rotation(..), Tile, attrs, blank, default)
+module City.Tile exposing (Rotation(..), Tile, blank, default, position, rotate)
 
 import Svg exposing (Svg, defs, path, svg)
 import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox, x)
@@ -30,9 +30,38 @@ default ( x, y ) rotation =
     }
 
 
-attrs : Tile -> List (Svg.Attribute msg)
-attrs tile =
+originX =
+    0
+
+
+originY =
+    7
+
+
+offset : Tile -> ( Int, Int )
+offset tile =
+    ( tile.x + originX + tile.y, originY - tile.y + tile.x )
+
+
+position : Tile -> List (Svg.Attribute msg)
+position tile =
     let
+        ( x, y ) =
+            offset tile
+    in
+    [ Attr.width (String.fromInt tile.width)
+    , Attr.height (String.fromInt tile.height)
+    , Attr.x (String.fromFloat <| (toFloat x * 95))
+    , Attr.y (String.fromFloat <| (toFloat y * 60))
+    ]
+
+
+rotate : Tile -> List (Svg.Attribute msg)
+rotate tile =
+    let
+        ( x, y ) =
+            offset tile
+
         rotInDeg =
             case tile.rotation of
                 RNone ->
@@ -45,31 +74,22 @@ attrs tile =
                     -180
 
                 RThreeQuarters ->
-                    0
-
-        ( originX, originY ) =
-            ( 7, 1 )
-
-        ( x, y ) =
-            ( tile.x + originX - tile.y, tile.y + originY + tile.x )
+                    -180
 
         midX =
-            (x * 95) + (tile.width // 2)
+            -- (x * 95) +
+            tile.width // 2
 
         midY =
-            (y * 60) + (tile.height // 2)
+            -- (y * 60) +
+            tile.height // 2
     in
-    [ Attr.width (String.fromInt tile.width)
-    , Attr.height (String.fromInt tile.height)
-    , Attr.x (String.fromFloat <| (toFloat x * 95))
-    , Attr.y (String.fromFloat <| (toFloat y * 60))
-    , transform ("rotate(" ++ String.fromInt rotInDeg ++ " " ++ String.fromInt midX ++ " " ++ String.fromInt midY ++ ")")
-    ]
+    [ Attr.transform ("rotate(" ++ String.fromInt rotInDeg ++ " " ++ String.fromInt midX ++ " " ++ String.fromInt midY ++ ")") ]
 
 
 blank : Tile -> Svg msg
 blank tile =
-    svg (attrs tile ++ [ viewBox "0 0 65.126 40.952" ])
+    svg [ viewBox "0 0 65.126 40.952" ]
         [ path [ d "M32.562 40.952L0 20.475 32.562 0l32.564 20.475z", fill "#d8dded" ]
             []
         ]

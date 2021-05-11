@@ -6,10 +6,15 @@ import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
 
 
 type RoadType
-    = Corner -- West <-> South hallway
-    | Tee -- West <-> North <-> South intersection
+    = Corner -- West <-> South
+    | Tee -- North <-> West <-> South intersection
     | Junction -- 4 way intersection
-    | Straight --  North <-> South
+    | Straight { hasCrosswalk : Bool } --  North <-> South
+    | Empty
+
+
+
+--| Crosswalk -- West <-> East with a crosswalk
 
 
 type alias Road =
@@ -35,35 +40,55 @@ view tile roadType =
                 RThreeQuarters ->
                     True
     in
-    case roadType of
-        Corner ->
-            if useAlt then
-                cornerAlt tile
+    svg (Tile.position tile)
+        [ Svg.g (Tile.rotate tile)
+            [ case roadType of
+                Corner ->
+                    if useAlt then
+                        cornerAlt tile
 
-            else
-                corner tile
+                    else
+                        corner tile
 
-        Tee ->
-            if useAlt then
-                threeWayIntersectionAlt tile
+                Tee ->
+                    if useAlt then
+                        teeAlt tile
 
-            else
-                threeWayIntersection tile
+                    else
+                        tee tile
 
-        Junction ->
-            fourWayIntersection tile
+                Junction ->
+                    fourWayIntersection tile
 
-        Straight ->
-            if useAlt then
-                straightAlt tile
+                Straight { hasCrosswalk } ->
+                    if useAlt then
+                        if hasCrosswalk then
+                            crosswalkAlt tile
 
-            else
-                straight tile
+                        else
+                            straightAlt tile
+
+                    else if hasCrosswalk then
+                        crosswalk tile
+
+                    else
+                        straight tile
+
+                Empty ->
+                    Tile.blank tile
+            ]
+        , Svg.text_ [ Attr.x "100", Attr.y "100", Attr.fontSize "10", fill "red" ] [ Svg.text (String.fromInt tile.x ++ ", " ++ String.fromInt tile.y) ]
+        ]
 
 
-threeWayIntersection : Tile -> Svg msg
-threeWayIntersection tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 65.126 40.953" ])
+
+--Crosswalk ->
+--crosswalk tile   --todo: add crosswalk alt
+
+
+teeAlt : Tile -> Svg msg
+teeAlt tile =
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.565 40.953L0 20.476 32.565 0l32.561 20.476-32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M23.534 35.248l-14.5-9.068 23.467-14.77 14.496 9.066-23.463 14.772" ]
@@ -83,9 +108,9 @@ threeWayIntersection tile =
         ]
 
 
-threeWayIntersectionAlt : Tile -> Svg msg
-threeWayIntersectionAlt tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 65.126 40.952" ])
+tee : Tile -> Svg msg
+tee tile =
+    svg [ viewBox "0 0 65.126 40.952" ]
         [ path [ d "M32.561 40.952L0 20.475 32.561 0l32.565 20.475-32.565 20.477", fill "#dcdff0" ]
             []
         , path [ d "M23.53 35.247L9.031 26.18 41.596 5.704l14.496 9.066L23.53 35.247", fill "#a3b7dd" ]
@@ -105,7 +130,7 @@ threeWayIntersectionAlt tile =
 
 fourWayIntersection : Tile -> Svg msg
 fourWayIntersection tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.565 40.953L0 20.476 32.565 0l32.561 20.476-32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M23.53 35.247L9.031 26.181 41.596 5.704l14.5 9.067L23.53 35.247" ]
@@ -125,7 +150,7 @@ fourWayIntersection tile =
 
 corner : Tile -> Svg msg
 corner tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.561 40.953l32.565-20.477L32.561 0 0 20.476l32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M32.498 29.544l14.5-9.068L23.53 5.706 9.031 14.77l23.467 14.773" ]
@@ -147,7 +172,7 @@ corner tile =
 
 cornerAlt : Tile -> Svg msg
 cornerAlt tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ d "M32.565 0L0 20.477l32.565 20.476 32.561-20.476L32.565 0", fill "#dcdff0" ]
             []
         , path [ d "M32.628 11.409L18.13 20.477l23.467 14.77 14.5-9.066-23.47-14.771", fill "#a3b7dd" ]
@@ -171,7 +196,7 @@ cornerAlt tile =
 
 straight : Tile -> Svg msg
 straight tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 65.123 40.951" ])
+    svg (Tile.rotate tile ++ [ viewBox "0 0 65.123 40.951" ])
         [ path [ fill "#dcdff0", d "M32.561 40.951L0 20.476 32.561 0l32.562 20.476L32.56 40.95" ]
             []
         , path [ fill "#a3b7dd", d "M23.53 35.247L9.031 26.18 41.593 5.704l14.499 9.066L23.53 35.247" ]
@@ -185,7 +210,7 @@ straight tile =
 
 straightAlt : Tile -> Svg msg
 straightAlt tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ d "M32.565 40.953l32.561-20.477L32.565 0 0 20.476l32.565 20.477", fill "#dcdff0" ]
             []
         , path [ d "M41.596 35.247l14.5-9.066L23.53 5.705 9.031 14.771l32.565 20.476", fill "#a3b7dd" ]
@@ -199,19 +224,39 @@ straightAlt tile =
 
 crosswalk : Tile -> Svg msg
 crosswalk tile =
-    svg (Tile.attrs tile ++ [ viewBox "0 0 65.126 40.953" ])
+    svg [ viewBox "0 0 65.126 40.953" ]
+        [ path [ d "M32.565 40.953L0 20.476 32.565 0l32.561 20.476-32.561 20.477", fill "#dcdff0" ]
+            []
+        , path [ d "M23.53 35.247L9.035 26.181 41.596 5.705l14.5 9.066L23.53 35.247", fill "#a3b7dd" ]
+            []
+        , path [ d "M16.704 30.995l-.847-.562L48.422 9.957l.847.561-32.565 20.477", fill "#fff" ]
+            []
+        , path [ d "M48.26 14.895l-6.727-4.213 2.515-1.538 6.727 4.212-2.515 1.54m-5.454 2.875l-6.727-4.213 2.515-1.538 6.727 4.212-2.515 1.54", fill "#a3b7dd" ]
+            []
+        , path [ d "M33.88 23.883l-6.727-4.214 10.002-6.77 6.656 4.125-9.93 6.859", fill "#a3b7dd" ]
+            []
+        , path [ d "M32.106 25.62l-6.727-4.213 2.515-1.538 6.728 4.212-2.516 1.54m-5.256 2.875l-6.728-4.213 2.516-1.538 6.727 4.211-2.515 1.54m-4.621 3.141L15.5 27.424l2.515-1.538 6.728 4.212-2.515 1.54", fill "#a3b7dd" ]
+            []
+        , path [ d "M38.566 25.886l-1.704-1.254 8.466-5.47 1.704 1.253-8.466 5.47m-2.572-1.738l-1.704-1.253 8.467-5.471 1.704 1.253-8.467 5.471m-2.515-1.486l-1.704-1.254 8.47-5.47 1.704 1.254-8.47 5.47m-2.572-1.654l-1.704-1.254 8.467-5.471 1.704 1.254-8.467 5.47m-2.41-1.48l-1.704-1.255 8.47-5.47 1.705 1.253-8.47 5.472m-2.375-1.591L24.42 16.68l8.467-5.47 1.704 1.254-8.467 5.471", fill "#fff" ]
+            []
+        ]
+
+
+crosswalkAlt : Tile -> Svg msg
+crosswalkAlt tile =
+    svg [ viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.561 40.953l32.565-20.477L32.561 0 0 20.476l32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M41.592 35.248l14.5-9.067L23.53 5.705 9.031 14.771l32.561 20.477" ]
             []
         , path [ fill "#fff", d "M48.422 30.995l.847-.562L16.704 9.957l-.847.561 32.565 20.477" ]
             []
-        , path [ fill "#a3b7dd", d "M16.866 14.895l6.728-4.213-2.516-1.538-6.727 4.212 2.515 1.54M22.32 17.771l6.728-4.213-2.516-1.538-6.727 4.212 2.515 1.54" ]
+        , path [ fill "#a3b7dd", d "M16.866 14.895l6.728-4.213-2.516-1.538-6.727 4.212 2.515 1.54m5.454 2.875l6.728-4.213-2.516-1.538-6.727 4.212 2.515 1.54" ]
             []
         , path [ fill "#a3b7dd", d "M31.246 23.882l6.727-4.213-10.001-6.77-6.657 4.125 9.93 6.858" ]
             []
-        , path [ fill "#a3b7dd", d "M33.02 25.62l6.727-4.213-2.515-1.538-6.727 4.212 2.515 1.54M38.276 28.497l6.728-4.214-2.515-1.538-6.728 4.212 2.515 1.54M42.898 31.637l6.727-4.213-2.515-1.538-6.728 4.212 2.516 1.54" ]
+        , path [ fill "#a3b7dd", d "M33.02 25.62l6.727-4.213-2.515-1.538-6.727 4.212 2.515 1.54m5.256 2.876l6.728-4.214-2.515-1.538-6.728 4.212 2.515 1.54m4.622 3.14l6.727-4.213-2.515-1.538-6.728 4.212 2.516 1.54" ]
             []
-        , path [ fill "#fff", d "M26.56 25.886l1.705-1.255-8.467-5.47-1.704 1.254 8.467 5.47M29.132 24.148l1.704-1.255-8.466-5.47-1.704 1.253 8.466 5.472M31.648 22.661l1.704-1.254-8.47-5.47-1.705 1.253 8.47 5.471M34.22 21.007l1.703-1.255-8.47-5.47-1.704 1.254 8.47 5.47M36.629 19.525l1.704-1.254-8.47-5.47-1.704 1.253 8.47 5.471M39.003 17.935l1.704-1.255-8.467-5.47-1.704 1.254 8.467 5.47" ]
+        , path [ fill "#fff", d "M26.56 25.886l1.705-1.255-8.467-5.47-1.704 1.254 8.467 5.47m2.571-1.737l1.704-1.255-8.466-5.47-1.704 1.253 8.466 5.472m2.516-1.487l1.704-1.254-8.47-5.47-1.705 1.253 8.47 5.471m2.573-1.654l1.703-1.255-8.47-5.47-1.704 1.254 8.47 5.47m2.41-1.481l1.704-1.254-8.47-5.47-1.704 1.253 8.47 5.471m2.374-1.59l1.704-1.255-8.467-5.47-1.704 1.254 8.467 5.47" ]
             []
         ]

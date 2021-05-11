@@ -131,6 +131,7 @@ markdownDocument =
 type alias Model =
     { city : City
     , budget : City.Budget
+    , originalSeed : Maybe Int
     , randomSeed : Seed
     , board : Board Road
     }
@@ -138,7 +139,8 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { randomSeed = Random.initialSeed 0
+    ( { originalSeed = Nothing
+      , randomSeed = Random.initialSeed 0
       , board = Tiler.emptyBoard
       , city = City.init { parks = 1, parkingLots = 1, housing = 1 }
       , budget = City.initialBudget
@@ -176,6 +178,9 @@ update msg model =
 
         InitializeRandomness now ->
             let
+                originalSeed =
+                    Time.posixToMillis now
+
                 seed =
                     Random.initialSeed <| Time.posixToMillis now
 
@@ -183,7 +188,8 @@ update msg model =
                     City.generate seed
             in
             ( { model
-                | randomSeed = nextSeed
+                | originalSeed = Just originalSeed
+                , randomSeed = nextSeed
                 , board = board
               }
             , Cmd.none
@@ -298,6 +304,12 @@ viewParksBudgetSlider model =
 viewInteractiveCity model =
     Element.column [ Element.width fill ]
         [ Element.row [ Element.centerX ] [ viewParksBudgetSlider model ]
+        , case model.originalSeed of
+            Just originalSeed ->
+                Element.row [ Element.centerX ] [ text ("Seed: " ++ String.fromInt originalSeed) ]
+
+            Nothing ->
+                Element.none
         , Element.row [ Element.centerX ] [ City.visualization model.board model.city ]
         ]
 
