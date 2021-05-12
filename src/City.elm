@@ -41,11 +41,11 @@ initialBudget =
 
 
 cityWidth =
-    8
+    16
 
 
 cityHeight =
-    8
+    16
 
 
 generate : Seed -> ( Board Road, Seed )
@@ -54,39 +54,85 @@ generate seed =
 
 
 generateOneOf : ( Int, Int ) -> ( Road, List Road )
-generateOneOf _ =
+generateOneOf ( x, y ) =
+    let
+        roads =
+            [ Road (Straight { hasCrosswalk = False }) RQuarter
+            , Road (Straight { hasCrosswalk = True }) RNone
+            , Road (Straight { hasCrosswalk = True }) RQuarter
+
+            --   , Road Corner RNone
+            --   , Road Corner RQuarter
+            --   , Road Corner RHalf
+            --   , Road Corner RThreeQuarters
+            , Road Junction RNone
+            , Road Tee RNone
+            , Road Tee RQuarter
+            , Road Tee RHalf
+            , Road Tee RThreeQuarters
+            , Road (Empty BlankTile) RNone
+            ]
+
+        buildings =
+            [ Road (Empty (Housing <| TallApartment 1)) RNone
+            , Road (Empty (Housing <| TallApartment 2)) RNone
+            , Road (Empty (Housing <| TallApartment 3)) RNone
+            , Road (Empty (Housing House)) RNone
+            , Road (Empty (Housing LargeHouse)) RNone
+            , Road (Empty (Hospital Clinic)) RNone
+            , Road (Empty (Park Lawn)) RNone
+            , Road (Empty (Park Forest)) RNone
+            , Road (Empty (Building Skyscraper)) RNone
+
+            --   , Road (Empty (Building FastFood)) RNone
+            , Road (Empty (Building Grocery)) RNone
+            , Road (Empty (Building Shop)) RNone
+            , Road (Empty (Building DepartmentStore)) RNone
+            , Road (Empty (Building SmallMultiuse)) RNone
+            , Road (Empty (Building MediumMultiuse)) RNone
+            , Road (Empty (Building Office)) RNone
+            , Road (Empty (Building LargeOffice)) RNone
+            ]
+    in
     ( Road (Straight { hasCrosswalk = False }) RNone
-    , [ Road (Straight { hasCrosswalk = False }) RQuarter
-      , Road (Straight { hasCrosswalk = True }) RNone
-      , Road (Straight { hasCrosswalk = True }) RQuarter
+    , if x == 0 && y == 0 then
+        [ Road Corner RHalf ]
 
-      --   , Road Corner RNone
-      --   , Road Corner RQuarter
-      --   , Road Corner RHalf
-      --   , Road Corner RThreeQuarters
-      , Road Junction RNone
-      , Road Tee RNone
-      , Road Tee RQuarter
-      , Road Tee RHalf
-      , Road Tee RThreeQuarters
-      , Road (Empty BlankTile) RNone
-      , Road (Empty (Housing <| TallApartment 1)) RNone
-      , Road (Empty (Housing <| TallApartment 2)) RNone
-      , Road (Empty (Housing <| TallApartment 3)) RNone
-      , Road (Empty (Hospital Clinic)) RNone
-      , Road (Empty (Park Lawn)) RNone
-      , Road (Empty (Park Forest)) RNone
-      , Road (Empty (Building Skyscraper)) RNone
+      else if x == cityWidth - 1 && y == 0 then
+        [ Road Corner RThreeQuarters ]
 
-      --   , Road (Empty (Building FastFood)) RNone
-      , Road (Empty (Building Grocery)) RNone
-      , Road (Empty (Building Shop)) RNone
-      , Road (Empty (Building DepartmentStore)) RNone
-      , Road (Empty (Building SmallMultiuse)) RNone
-      , Road (Empty (Building MediumMultiuse)) RNone
-      , Road (Empty (Building Office)) RNone
-      , Road (Empty (Building LargeOffice)) RNone
-      ]
+      else if x == 0 && y == cityHeight - 1 then
+        [ Road Corner RQuarter ]
+
+      else if x == cityWidth - 1 && y == cityHeight - 1 then
+        [ Road Corner RNone ]
+
+      else if (x == 1 || x == cityWidth - 2) && (y == 0 || y == cityHeight - 1) then
+        [ Road (Straight { hasCrosswalk = False }) RQuarter ]
+
+      else if (y == 1 || y == cityHeight - 2) && (x == 0 || x == cityWidth - 1) then
+        [ Road (Straight { hasCrosswalk = False }) RNone ]
+
+      else if x == 0 then
+        [ Road Tee RHalf, Road (Straight { hasCrosswalk = False }) RNone ]
+
+      else if y == 0 then
+        [ Road Tee RThreeQuarters, Road (Straight { hasCrosswalk = False }) RQuarter ]
+
+      else if x == cityWidth - 1 then
+        [ Road Tee RNone, Road (Straight { hasCrosswalk = False }) RNone ]
+
+      else if y == cityHeight - 1 then
+        [ Road Tee RQuarter, Road (Straight { hasCrosswalk = False }) RQuarter ]
+
+      else if x == 1 || x == cityWidth - 2 then
+        Road (Straight { hasCrosswalk = False }) RQuarter :: buildings
+
+      else if y == 1 || y == cityHeight - 2 then
+        Road (Straight { hasCrosswalk = False }) RNone :: buildings
+
+      else
+        roads ++ buildings
     )
 
 
@@ -897,11 +943,6 @@ cellStyleToString style =
             "Empty"
 
 
-
---Crosswalk ->
---"Crosswalk"
-
-
 type alias TileInfo =
     { x : Int, y : Int, style : RoadType }
 
@@ -923,6 +964,8 @@ allTiles =
           , Road (Straight { hasCrosswalk = True }) RNone
           , Road (Straight { hasCrosswalk = True }) RQuarter
           , Road Junction RNone
+          , Road Corner RNone
+          , Road Corner RQuarter
           , Road Tee RNone
           , Road Tee RQuarter
           ]

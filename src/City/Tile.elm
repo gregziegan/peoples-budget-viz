@@ -28,8 +28,8 @@ type Rotation
 
 default : ( Int, Int ) -> Rotation -> Tile
 default ( x, y ) rotation =
-    { height = 200
-    , width = 200
+    { height = 100
+    , width = 100
     , rotation = rotation
     , x = x
     , y = y
@@ -37,11 +37,11 @@ default ( x, y ) rotation =
 
 
 originX =
-    0
+    1
 
 
 originY =
-    7
+    20
 
 
 offset : Tile -> ( Int, Int )
@@ -57,8 +57,8 @@ position tile =
     in
     [ Attr.width (String.fromInt tile.width)
     , Attr.height (String.fromInt tile.height)
-    , Attr.x (String.fromFloat <| (toFloat x * 95))
-    , Attr.y (String.fromFloat <| (toFloat y * 60))
+    , Attr.x (String.fromFloat <| (toFloat x * 95 / 2))
+    , Attr.y (String.fromFloat <| (toFloat y * 60 / 2))
     ]
 
 
