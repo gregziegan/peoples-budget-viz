@@ -37,6 +37,9 @@ import Random exposing (Generator, Seed)
 import Task
 import Tiler exposing (Board, Neighbor(..))
 import Time exposing (Posix)
+import Url
+import Url.Parser
+import Url.Parser.Query as Query exposing (Parser)
 
 
 manifest : Manifest.Config Pages.PathKey
@@ -68,14 +71,14 @@ type alias Rendered =
 main : Pages.Platform.Program Model Msg Metadata Rendered Pages.PathKey
 main =
     Pages.Platform.init
-        { init = \_ -> init
+        { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
         , documents = [ markdownDocument ]
         , manifest = manifest
         , canonicalSiteUrl = canonicalSiteUrl
-        , onPageChange = Nothing
+        , onPageChange = Just OnPageChange
         , internals = Pages.internals
         }
         |> Pages.Platform.withFileGenerator generateFiles
@@ -137,11 +140,39 @@ type alias Model =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( { originalSeed = Nothing
-      , randomSeed = Random.initialSeed 0
-      , board = Tiler.emptyBoard
+init :
+    Maybe
+        { path :
+            { path : PagePath Pages.PathKey
+            , query : Maybe String
+            , fragment : Maybe String
+            }
+        , metadata : metadata
+        }
+    -> ( Model, Cmd Msg )
+init urlData =
+    let
+        seed =
+            Maybe.withDefault 0 (Maybe.andThen extractSeed <| Maybe.map .path urlData)
+
+        randomSeed =
+            Random.initialSeed seed
+
+        board =
+            if seed == 0 then
+                Tiler.emptyBoard
+
+            else
+                Tuple.first <| City.generate randomSeed
+    in
+    ( { originalSeed =
+            if seed == 0 then
+                Nothing
+
+            else
+                Just seed
+      , randomSeed = randomSeed
+      , board = board
       , city = City.init { parks = 1, parkingLots = 1, housing = 1 }
       , budget = City.initialBudget
       }
@@ -155,10 +186,43 @@ type Msg
     = ChangedParksBudget Float
     | InitializeRandomness Posix
     | Tick Float
+    | OnPageChange
+        { fragment : Maybe String
+        , metadata : Metadata
+        , path : PagePath Pages.PathKey
+        , query : Maybe String
+        }
 
 
 updateBudget transform budget =
     transform budget
+
+
+extractSeed :
+    { a
+        | query : Maybe String
+        , fragment : Maybe String
+    }
+    -> Maybe Int
+extractSeed pageChange =
+    case pageChange.query of
+        Just queryStr ->
+            let
+                urlStr =
+                    "https://example.com/?" ++ queryStr
+
+                seed =
+                    case Url.fromString urlStr of
+                        Nothing ->
+                            Nothing
+
+                        Just url ->
+                            Maybe.withDefault Nothing (Url.Parser.parse (Url.Parser.query (Query.int "seed")) url)
+            in
+            seed
+
+        Nothing ->
+            Nothing
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -179,10 +243,10 @@ update msg model =
         InitializeRandomness now ->
             let
                 originalSeed =
-                    Time.posixToMillis now
+                    Maybe.withDefault (Time.posixToMillis now) model.originalSeed
 
                 seed =
-                    Random.initialSeed <| Time.posixToMillis now
+                    Random.initialSeed <| originalSeed
 
                 ( board, nextSeed ) =
                     City.generate seed
@@ -197,6 +261,22 @@ update msg model =
 
         Tick _ ->
             ( model, Cmd.none )
+
+        OnPageChange page ->
+            let
+                seed =
+                    extractSeed page
+
+                randomSeed =
+                    Maybe.withDefault model.randomSeed <| Maybe.map Random.initialSeed seed
+            in
+            ( { model
+                | originalSeed = seed
+                , randomSeed = randomSeed
+                , board = Tuple.first <| City.generate randomSeed
+              }
+            , Cmd.none
+            )
 
 
 
