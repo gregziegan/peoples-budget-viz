@@ -39,9 +39,9 @@ generate :
     -> String
 generate { siteTagline, siteUrl } siteMetadata =
     Rss.generate
-        { title = "elm-pages Blog"
+        { title = "People's Budget Blog"
         , description = siteTagline
-        , url = "https://elm-pages.com/blog"
+        , url = "https://peoplesbudget.art/blog"
         , lastBuildTime = Pages.builtAt
         , generator = Just "elm-pages"
         , items = siteMetadata |> List.filterMap metadataToRssItem
@@ -71,8 +71,8 @@ metadataToRssItem page =
                     , pubDate = Rss.Date article.published
                     , content = Nothing
                     , contentEncoded = Nothing
-                    , enclosure = Nothing }
-
+                    , enclosure = Nothing
+                    }
 
         _ ->
             Nothing

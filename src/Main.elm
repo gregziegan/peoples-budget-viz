@@ -192,6 +192,7 @@ type Msg
         , path : PagePath Pages.PathKey
         , query : Maybe String
         }
+    | NewCity
 
 
 updateBudget transform budget =
@@ -278,6 +279,9 @@ update msg model =
             , Cmd.none
             )
 
+        NewCity ->
+            ( model, Task.perform InitializeRandomness Time.now )
+
 
 
 --subscriptions : Model -> Sub Msg
@@ -339,7 +343,7 @@ pageView model siteMetadata page viewForPage =
             }
 
         Metadata.BlogIndex ->
-            { title = "elm-pages blog"
+            { title = "People's Budget blog"
             , body =
                 [ Element.column [ Element.padding 20, Element.centerX ] [ Index.view siteMetadata ]
                 ]
@@ -384,6 +388,7 @@ viewParksBudgetSlider model =
 viewInteractiveCity model =
     Element.column [ Element.width fill ]
         [ Element.row [ Element.centerX ] [ viewParksBudgetSlider model ]
+        , Element.row [ Element.centerX ] [ Input.button [] { onPress = Just NewCity, label = Element.text "Generate Another City!" } ]
         , case model.originalSeed of
             Just originalSeed ->
                 Element.row [ Element.centerX ] [ text ("Seed: " ++ String.fromInt originalSeed) ]
@@ -421,7 +426,7 @@ head metadata =
                         , siteName = "peoples-budget-viz"
                         , image =
                             { url = images.logoPng
-                            , alt = "elm-pages logo"
+                            , alt = "People's Budget logo"
                             , dimensions = Nothing
                             , mimeType = Nothing
                             }
@@ -434,7 +439,7 @@ head metadata =
                 Metadata.Article meta ->
                     Seo.summaryLarge
                         { canonicalUrlOverride = Nothing
-                        , siteName = "elm-pages starter"
+                        , siteName = "People's Budget article"
                         , image =
                             { url = meta.image
                             , alt = meta.description
@@ -474,13 +479,13 @@ head metadata =
                         , siteName = "peoples-budget-viz"
                         , image =
                             { url = meta.avatar
-                            , alt = meta.name ++ "'s elm-pages articles."
+                            , alt = meta.name ++ "'s People's Budget articles."
                             , dimensions = Nothing
                             , mimeType = Nothing
                             }
                         , description = meta.bio
                         , locale = Nothing
-                        , title = meta.name ++ "'s elm-pages articles."
+                        , title = meta.name ++ "'s People's Budget articles."
                         }
                         |> Seo.profile
                             { firstName = firstName
@@ -491,16 +496,16 @@ head metadata =
                 Metadata.BlogIndex ->
                     Seo.summaryLarge
                         { canonicalUrlOverride = Nothing
-                        , siteName = "elm-pages"
+                        , siteName = "People's Budget"
                         , image =
                             { url = images.logoPng
-                            , alt = "elm-pages logo"
+                            , alt = "People's Budget logo"
                             , dimensions = Nothing
                             , mimeType = Nothing
                             }
                         , description = siteTagline
                         , locale = Nothing
-                        , title = "elm-pages blog"
+                        , title = "People's Budget blog"
                         }
                         |> Seo.website
 
@@ -510,7 +515,7 @@ head metadata =
                         , siteName = "peoples-budget-viz"
                         , image =
                             { url = images.logoPng
-                            , alt = "elm-pages logo"
+                            , alt = "People's Budget logo"
                             , dimensions = Nothing
                             , mimeType = Nothing
                             }
@@ -529,4 +534,4 @@ canonicalSiteUrl =
 
 siteTagline : String
 siteTagline =
-    "Starter blog for elm-pages"
+    "A coalition of grassroots Nashville organizations working with the local community on a democratic city budget."
