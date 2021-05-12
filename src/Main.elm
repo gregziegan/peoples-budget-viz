@@ -7,7 +7,7 @@ import City.Road exposing (Road, RoadType(..))
 import Color
 import Data.Author as Author
 import Date
-import Element exposing (Element, column, fill, row, text, width)
+import Element exposing (Element, column, fill, padding, row, text, width)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
@@ -280,7 +280,7 @@ update msg model =
             )
 
         NewCity ->
-            ( model, Task.perform InitializeRandomness Time.now )
+            ( { model | originalSeed = Nothing }, Task.perform InitializeRandomness Time.now )
 
 
 
@@ -385,16 +385,31 @@ viewParksBudgetSlider model =
         }
 
 
-viewInteractiveCity model =
-    Element.column [ Element.width fill ]
-        [ Element.row [ Element.centerX ] [ viewParksBudgetSlider model ]
-        , Element.row [ Element.centerX ] [ Input.button [] { onPress = Just NewCity, label = Element.text "Generate Another City!" } ]
-        , case model.originalSeed of
-            Just originalSeed ->
-                Element.row [ Element.centerX ] [ text ("Seed: " ++ String.fromInt originalSeed) ]
+buttonStyles =
+    [ padding 10
+    , Border.width 1
+    , Border.rounded 3
+    ]
 
-            Nothing ->
-                Element.none
+
+viewInteractiveCity model =
+    Element.column [ Element.width fill, Element.spacing 10 ]
+        [ Element.row [ Element.centerX ] [ viewParksBudgetSlider model ]
+        , Element.row [ Element.centerX, Element.spacing 10 ]
+            [ Input.button
+                buttonStyles
+                { onPress = Just NewCity, label = Element.text "Generate another city" }
+            , case model.originalSeed of
+                Just originalSeed ->
+                    Element.link (buttonStyles ++ [ Border.width 0, Background.color (Element.rgb255 0 200 100), Font.color (Element.rgb255 255 255 255) ])
+                        { url = "/?seed=" ++ String.fromInt originalSeed
+                        , label =
+                            Element.text "Share your city"
+                        }
+
+                Nothing ->
+                    Element.none
+            ]
         , Element.row [ Element.centerX ] [ City.visualization model.board model.city ]
         ]
 
