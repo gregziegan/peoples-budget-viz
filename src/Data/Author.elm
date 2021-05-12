@@ -17,9 +17,9 @@ type alias Author =
 
 all : List Author
 all =
-    [ { name = "Dillon Kearns"
-      , avatar = Pages.images.author.dillon
-      , bio = "Elm developer and educator. Founder of Incremental Elm Consulting."
+    [ { name = "People's Budget Nashville"
+      , avatar = Pages.images.author.peoplesBudgetLogo
+      , bio = "The Nashville People’s Budget Coalition is building a Nashville where public safety includes communities with fully funded education, access to housing and health care, and freedom from policing and jails. To make this future real, we are raising public awareness about the Metro Nashville city budget process and organizing community members to create a people’s budget that invests in the wellbeing, health, and freedom of every community member. Our coalition encompasses organizations fighting for fair wages and safe, dignified workplaces, divestment from policing and jails, investment in restorative practices, and access to housing and transportation. We know that Nashville can be a city where every community member has access to the tools and resources they need to thrive if we are committed to investing public dollars into social goods and divesting from social control."
       }
     ]
 
