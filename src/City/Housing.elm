@@ -1,8 +1,7 @@
-module City.Housing exposing (HousingType(..), view)
+module City.Housing exposing (HousingType(..), def, id)
 
-import City.Tile as Tile exposing (Tile)
 import Svg exposing (Svg, clipPath, defs, g, path, svg)
-import Svg.Attributes as Attr exposing (clipPathUnits, d, fill, id, opacity, style, transform, viewBox)
+import Svg.Attributes as Attr exposing (clipPathUnits, d, fill, opacity, style, transform, viewBox)
 
 
 type HousingType
@@ -12,8 +11,8 @@ type HousingType
     | House
 
 
-view : Tile -> HousingType -> Svg msg
-view tile housingType =
+def : HousingType -> Svg msg
+def housingType =
     case housingType of
         TallApartment index ->
             let
@@ -22,30 +21,63 @@ view tile housingType =
             in
             case remainder of
                 0 ->
-                    brownApartment tile
+                    brownApartment
 
                 1 ->
-                    greenApartment tile
+                    greenApartment
 
                 2 ->
-                    yellowApartment tile
+                    yellowApartment
 
                 _ ->
-                    brownApartment tile
+                    brownApartment
 
         MediumApartment ->
-            medApartment tile
+            medApartment
 
         LargeHouse ->
-            largeHouse tile
+            largeHouse
 
         House ->
-            house tile
+            house
 
 
-largeHouse : Tile -> Svg msg
-largeHouse tile =
-    svg [ viewBox "0 0 47.452 40.632" ]
+id : HousingType -> String
+id housingType =
+    "housing-"
+        ++ (case housingType of
+                TallApartment index ->
+                    let
+                        remainder =
+                            modBy 3 index
+                    in
+                    case remainder of
+                        0 ->
+                            "brown-apartment"
+
+                        1 ->
+                            "green-apartment"
+
+                        2 ->
+                            "yellow-apartment"
+
+                        _ ->
+                            "brown-apartment"
+
+                MediumApartment ->
+                    "med-apartment"
+
+                LargeHouse ->
+                    "large-house"
+
+                House ->
+                    "house"
+           )
+
+
+largeHouse : Svg msg
+largeHouse =
+    svg [ Attr.id "housing-large-house", viewBox "0 0 47.452 40.632" ]
         [ path [ d "M.689 10.23v10.893l12.977 8.16V18.389L.689 10.23", fill "#496cb0" ]
             []
         , path [ d "M22.907 9.832L7.211 0 .689 10.275l12.977 8.16 9.241-8.603", fill "#992628" ]
@@ -183,9 +215,9 @@ largeHouse tile =
         ]
 
 
-house : Tile -> Svg msg
-house tile =
-    svg [ viewBox "0 0 31.951 31.77" ]
+house : Svg msg
+house =
+    svg [ Attr.id "housing-house", viewBox "0 0 31.951 31.77" ]
         [ path [ d "M15.962 21.57L.778 12.023l15.184-9.547 15.184 9.547-15.184 9.549", fill "#c2695d" ]
             []
         , path [ d "M15.996 31.77V21.572L.813 12.024v10.199l15.183 9.547", fill "#c2695d" ]
@@ -309,9 +341,9 @@ house tile =
         ]
 
 
-medApartment : Tile -> Svg msg
-medApartment tile =
-    svg [ viewBox "0 0 34.712 57.297" ]
+medApartment : Svg msg
+medApartment =
+    svg [ Attr.id "housing-med-apartment", Attr.x "0", Attr.y "-60", viewBox "0 0 34.712 57.297" ]
         [ path [ d "M1.108 29.658v17.423l16.248 10.216V39.875z", fill "#355b88" ]
             []
         , path [ d "M33.604 29.658v17.423L17.356 57.297V39.875z", fill "#30425c" ]
@@ -555,199 +587,199 @@ medApartment tile =
         ]
 
 
-brownApartment : Tile -> Svg msg
-brownApartment tile =
-    svg [ viewBox "0 0 35.544 61.699" ]
+brownApartment : Svg msg
+brownApartment =
+    svg [ Attr.id "housing-brown-apartment", viewBox "0 0 35.544 61.699" ]
         [ defs []
-            [ clipPath [ clipPathUnits "userSpaceOnUse", id "a" ]
+            [ clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "a" ]
                 [ path [ d "M218.318 1026.79h4.705v-6.27h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "b" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "b" ]
                 [ path [ d "M220.816 1025.19h4.706v-6.27h-4.706z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "c" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "c" ]
                 [ path [ d "M223.314 1023.62h4.707v-6.19h-4.707z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "d" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "d" ]
                 [ path [ d "M230.087 1019.21h4.705v-6.26h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "e" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "e" ]
                 [ path [ d "M232.585 1017.62h4.707v-6.27h-4.707z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "f" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "f" ]
                 [ path [ d "M235.085 1016.05h4.705v-6.19h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "g" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "g" ]
                 [ path [ d "M242.159 1011.7h4.705v-6.26h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "h" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "h" ]
                 [ path [ d "M244.657 1010.11h4.705v-6.27h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "i" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "i" ]
                 [ path [ d "M247.155 1008.53h4.705v-6.19h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "j" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "j" ]
                 [ path [ d "M253.796 1004.42h4.705v-6.267h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "k" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "k" ]
                 [ path [ d "M256.294 1002.82h4.705v-6.264h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "l" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "l" ]
                 [ path [ d "M258.792 1001.25h4.705v-6.19h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "m" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "m" ]
                 [ path [ d "M218.139 997.118h4.705v-6.264h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "n" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "n" ]
                 [ path [ d "M220.637 995.524h4.705v-6.269h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "o" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "o" ]
                 [ path [ d "M223.135 993.948h4.706v-6.189h-4.706z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "p" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "p" ]
                 [ path [ d "M229.905 989.548h4.707v-6.264h-4.707z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "q" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "q" ]
                 [ path [ d "M232.405 987.954h4.705v-6.269h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "r" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "r" ]
                 [ path [ d "M234.903 986.378h4.705v-6.19h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "s" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "s" ]
                 [ path [ d "M241.979 982.03h4.704v-6.263h-4.704z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "t" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "t" ]
                 [ path [ d "M244.478 980.437h4.703v-6.268h-4.703z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "u" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "u" ]
                 [ path [ d "M246.974 978.86h4.705v-6.187h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "v" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "v" ]
                 [ path [ d "M253.614 974.747h4.705v-6.264h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "w" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "w" ]
                 [ path [ d "M256.112 973.155h4.705v-6.269h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "x" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "x" ]
                 [ path [ d "M258.61 971.579h4.705v-6.189h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "y" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "y" ]
                 [ path [ d "M311.546 1026.51h4.707v-6.27h-4.707z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "z" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "z" ]
                 [ path [ d "M309.048 1024.92h4.705v-6.27h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "A" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "A" ]
                 [ path [ d "M306.55 1023.34h4.705v-6.19h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "B" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "B" ]
                 [ path [ d "M299.78 1018.94h4.705v-6.27h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "C" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "C" ]
                 [ path [ d "M297.282 1017.34h4.705v-6.26h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "D" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "D" ]
                 [ path [ d "M294.784 1015.77h4.705v-6.19h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "E" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "E" ]
                 [ path [ d "M287.708 1011.42h4.705v-6.26h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "F" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "F" ]
                 [ path [ d "M285.21 1009.83h4.705v-6.27h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "G" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "G" ]
                 [ path [ d "M282.712 1008.25h4.705v-6.19h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "H" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "H" ]
                 [ path [ d "M276.073 1004.14h4.705v-6.264h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "I" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "I" ]
                 [ path [ d "M273.575 1002.55h4.705v-6.274h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "J" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "J" ]
                 [ path [ d "M271.077 1000.97h4.705v-6.19h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "K" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "K" ]
                 [ path [ d "M311.728 996.839h4.705v-6.264h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "L" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "L" ]
                 [ path [ d "M309.229 995.247h4.706v-6.269h-4.706z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "M" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "M" ]
                 [ path [ d "M306.731 993.671h4.706v-6.19h-4.706z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "N" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "N" ]
                 [ path [ d "M299.962 989.269h4.705v-6.264h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "O" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "O" ]
                 [ path [ d "M297.462 987.677h4.707v-6.27h-4.707z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "P" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "P" ]
                 [ path [ d "M294.964 986.101h4.705v-6.19h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "Q" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "Q" ]
                 [ path [ d "M287.89 981.753h4.705v-6.266h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "R" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "R" ]
                 [ path [ d "M285.392 980.159h4.705v-6.267h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "S" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "S" ]
                 [ path [ d "M282.892 978.583h4.707v-6.187h-4.707z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "T" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "T" ]
                 [ path [ d "M276.253 974.47h4.705v-6.264h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "U" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "U" ]
                 [ path [ d "M273.755 972.876h4.705v-6.268h-4.705z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "V" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "V" ]
                 [ path [ d "M271.257 971.3h4.705v-6.188h-4.705z" ]
                     []
                 ]
@@ -1269,9 +1301,9 @@ brownApartment tile =
         ]
 
 
-greenApartment : Tile -> Svg msg
-greenApartment tile =
-    svg [ viewBox "0 0 34.826 61.699" ]
+greenApartment : Svg msg
+greenApartment =
+    svg [ Attr.id "housing-green-apartment", viewBox "0 0 34.826 61.699" ]
         [ path [ d "M17.414 14.805L5.642 7.403 17.414 0l11.772 7.403zM0 50.75V16.117l17.413 10.949v34.633z", fill "#86836b" ]
             []
         , path [ d "M0 16.117l5.642-8.714 11.771 7.402v12.26z", fill "#4c3320" ]
@@ -1489,9 +1521,9 @@ greenApartment tile =
         ]
 
 
-yellowApartment : Tile -> Svg msg
-yellowApartment tile =
-    svg (Tile.rotate tile ++ [ viewBox "0 0 33.597 62.866" ])
+yellowApartment : Svg msg
+yellowApartment =
+    svg [ Attr.id "housing-yellow-apartment", viewBox "0 0 33.597 62.866" ]
         [ path [ d "M15.605 25.375L0 15.636 17.993 4.322l15.604 9.738z", fill "#6c4d2a" ]
             []
         , path [ d "M0 53.128V15.635l15.605 9.738v37.493z", fill "#d5b480" ]

@@ -1,8 +1,7 @@
-module City.Building exposing (BuildingType(..), view)
+module City.Building exposing (BuildingType(..), def, id)
 
-import City.Tile as Tile exposing (Tile)
 import Svg exposing (Svg, clipPath, defs, g, path, svg)
-import Svg.Attributes as Attr exposing (clipPathUnits, d, fill, id, opacity, style, transform, viewBox)
+import Svg.Attributes as Attr exposing (clipPathUnits, d, fill, opacity, style, transform, viewBox)
 
 
 type BuildingType
@@ -17,40 +16,71 @@ type BuildingType
     | LargeOffice
 
 
-view : Tile -> BuildingType -> Svg msg
-view tile buildingType =
+def : BuildingType -> Svg msg
+def buildingType =
     case buildingType of
         Skyscraper ->
-            skyscraper tile
+            skyscraper
 
         Shop ->
-            shop tile
+            shop
 
         DepartmentStore ->
-            departmentStore tile
+            departmentStore
 
         SmallMultiuse ->
-            smallMultiuse tile
+            smallMultiuse
 
         MediumMultiuse ->
-            mediumMultiuse tile
+            mediumMultiuse
 
         Grocery ->
-            grocery tile
+            grocery
 
         FastFood ->
-            fastFood tile
+            fastFood
 
         Office ->
-            office tile
+            office
 
         LargeOffice ->
-            largeOffice tile
+            largeOffice
 
 
-skyscraper : Tile -> Svg msg
-skyscraper tile =
-    svg [ viewBox "0 0 55.761 92.043" ]
+id : BuildingType -> String
+id buildingType =
+    case buildingType of
+        Skyscraper ->
+            "skyscraper"
+
+        Shop ->
+            "shop"
+
+        DepartmentStore ->
+            "department-store"
+
+        SmallMultiuse ->
+            "small-multiuse"
+
+        MediumMultiuse ->
+            "medium-multiuse"
+
+        Grocery ->
+            "grocery"
+
+        FastFood ->
+            "fast-food"
+
+        Office ->
+            "office"
+
+        LargeOffice ->
+            "large-office"
+
+
+skyscraper : Svg msg
+skyscraper =
+    svg [ Attr.id (id Skyscraper), viewBox "0 0 55.761 92.043" ]
         [ path [ fill "#37568c", d "M1.78 47.643v27.988l26.1 16.412V64.056L1.78 47.643" ]
             []
         , path [ fill "#2e3c59", d "M53.982 47.643v27.988L27.88 92.043V64.056l26.102-16.413" ]
@@ -128,9 +158,9 @@ skyscraper tile =
         ]
 
 
-shop : Tile -> Svg msg
-shop tile =
-    svg [ viewBox "0 0 38.456 44.056" ]
+shop : Svg msg
+shop =
+    svg [ Attr.id (id Shop), viewBox "0 0 38.456 44.056" ]
         [ path [ d "M.563 15.763v17.942l13.367 8.513V24.276L.563 15.763", fill "#eec169" ]
             []
         , path [ d "M13.93 24.276L7.247 13.042l-6.684 2.72z", fill "#eec169" ]
@@ -292,9 +322,9 @@ shop tile =
         ]
 
 
-departmentStore : Tile -> Svg msg
-departmentStore tile =
-    svg [ viewBox "0 0 65.027 61.519" ]
+departmentStore : Svg msg
+departmentStore =
+    svg [ Attr.id (id DepartmentStore), viewBox "0 0 65.027 61.519" ]
         [ path [ d "M2.425 42.62V13.66L32.48 32.557V61.52L2.425 42.62", fill "#dce8e3" ]
             []
         , path [ d "M62.537 13.66v28.96l-30.056 18.9V32.557L62.537 13.66", fill "#c7a493" ]
@@ -546,9 +576,9 @@ departmentStore tile =
         ]
 
 
-smallMultiuse : Tile -> Svg msg
-smallMultiuse tile =
-    svg [ viewBox "0 0 41.161 46.245" ]
+smallMultiuse : Svg msg
+smallMultiuse =
+    svg [ Attr.id (id SmallMultiuse), viewBox "0 0 41.161 46.245" ]
         [ path [ d "M20.61 26.617L.952 14.255 20.61 1.895l19.659 12.36L20.61 26.617", fill "#bd7f42" ]
             []
         , path [ d "M20.61 26.617l.094-.15-19.42-12.212L20.61 2.102l19.327 12.153-19.42 12.213.093.149.094-.15-.094.15.094.149 19.658-12.362a.176.176 0 0 0 0-.298L20.704 1.745a.175.175 0 0 0-.188 0L.858 14.105a.176.176 0 0 0 0 .3l19.658 12.361c.058.036.13.036.188 0l-.094-.15", fill "#53412f" ]
@@ -726,9 +756,9 @@ smallMultiuse tile =
         ]
 
 
-mediumMultiuse : Tile -> Svg msg
-mediumMultiuse tile =
-    svg [ viewBox "0 0 49.267 50.232" ]
+mediumMultiuse : Svg msg
+mediumMultiuse =
+    svg [ Attr.id (id MediumMultiuse), viewBox "0 0 49.267 50.232" ]
         [ path [ d "M24.633 31.484L1.026 16.638 24.633 1.794l23.608 14.844-23.608 14.846", fill "#fff" ]
             []
         , path [ d "M24.633 31.484l.094-.15-23.37-14.696L24.633 2.002 47.91 16.638 24.54 31.335l.093.149.094-.15-.094.15.094.15 23.608-14.846a.176.176 0 0 0 0-.299L24.727 1.644a.175.175 0 0 0-.187 0L.932 16.49a.176.176 0 0 0 0 .299L24.54 31.634c.057.036.13.036.187 0l-.094-.15", fill "#53412f" ]
@@ -1110,15 +1140,15 @@ mediumMultiuse tile =
         ]
 
 
-grocery : Tile -> Svg msg
-grocery tile =
-    svg [ viewBox "0 0 36.123 36.872" ]
+grocery : Svg msg
+grocery =
+    svg [ Attr.id (id Grocery), viewBox "0 0 36.123 36.872" ]
         [ defs []
-            [ clipPath [ clipPathUnits "userSpaceOnUse", id "a" ]
+            [ clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "a" ]
                 [ path [ d "M2320.12 4033.24l-56.6 34.59-20.98 105.81 26.34-16.77v-.07l10.73-6.84v.08l14.69-9.36 2.15-1.37 23.67-106.07" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "b" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "b" ]
                 [ path [ d "M2727.01 4377.47l15.24 125.8 90.48-16.99-13.79-113.91-91.93 5.1" ]
                     []
                 ]
@@ -1416,19 +1446,19 @@ grocery tile =
         ]
 
 
-fastFood : Tile -> Svg msg
-fastFood tile =
-    svg [ viewBox "0 0 45.49 38.875" ]
+fastFood : Svg msg
+fastFood =
+    svg [ Attr.id (id FastFood), viewBox "0 0 45.49 38.875" ]
         [ defs []
-            [ clipPath [ clipPathUnits "userSpaceOnUse", id "a" ]
+            [ clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "a" ]
                 [ path [ d "M112.614 607.156h10.133v-22.519h-10.133z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "b" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "b" ]
                 [ path [ d "M133.347 594.354h10.132v-22.52h-10.132z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "c" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "c" ]
                 [ path [ d "M153.417 582.238h5.754v-19.851h-5.754z" ]
                     []
                 ]
@@ -1660,9 +1690,9 @@ fastFood tile =
         ]
 
 
-office : Tile -> Svg msg
-office tile =
-    svg [ viewBox "0 0 52.997 58.702" ]
+office : Svg msg
+office =
+    svg [ Attr.id (id Office), viewBox "0 0 52.997 58.702" ]
         [ path [ d "M20.513 33.178L52.997 12.9 32.483 0 0 20.28z", fill "#c8ba9e" ]
             []
         , path [ d "M52.997 38.423V12.9L20.513 33.18v25.523z", fill "#81785b" ]
@@ -1904,95 +1934,95 @@ office tile =
         ]
 
 
-largeOffice : Tile -> Svg msg
-largeOffice tile =
-    svg [ viewBox "0 0 69.712 72.818" ]
+largeOffice : Svg msg
+largeOffice =
+    svg [ Attr.id (id LargeOffice), viewBox "0 0 69.712 72.818" ]
         [ defs []
-            [ clipPath [ clipPathUnits "userSpaceOnUse", id "a" ]
+            [ clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "a" ]
                 [ path [ d "M475.488 812.535h.429v-69.212h-.429z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "b" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "b" ]
                 [ path [ d "M486.24 805.656h.429v-69.214h-.429z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "c" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "c" ]
                 [ path [ d "M498.5 798.223h.429v-69.214h-.429z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "d" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "d" ]
                 [ path [ d "M510.005 790.988h.43v-69.212h-.43z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "e" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "e" ]
                 [ path [ d "M522.048 783.151h.432V713.94h-.432z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "f" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "f" ]
                 [ path [ d "M470.345 806.93h59.932v-35.365h-59.932z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "g" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "g" ]
                 [ path [ d "M470.648 795.439h59.461v-36.161h-59.461z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "h" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "h" ]
                 [ path [ d "M470.515 784.874h59.459v-36.16h-59.459z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "i" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "i" ]
                 [ path [ d "M470.648 773.478h59.461v-36.163h-59.461z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "j" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "j" ]
                 [ path [ d "M470.648 763.075h59.461v-36.16h-59.461z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "k" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "k" ]
                 [ path [ d "M470.58 752.386h59.461v-36.162H470.58z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "l" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "l" ]
                 [ path [ d "M659.101 813.501h.438v-70.559h-.438z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "m" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "m" ]
                 [ path [ d "M648.136 806.488h.44v-70.559h-.44z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "n" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "n" ]
                 [ path [ d "M635.64 798.908h.44v-70.557h-.44z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "o" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "o" ]
                 [ path [ d "M623.912 791.535h.437v-70.557h-.437z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "p" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "p" ]
                 [ path [ d "M611.632 783.548h.438v-70.561h-.438z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "q" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "q" ]
                 [ path [ d "M603.681 807.787h61.1v-36.052h-61.1z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "r" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "r" ]
                 [ path [ d "M603.853 796.074h60.619v-36.866h-60.619z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "s" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "s" ]
                 [ path [ d "M603.99 785.302h60.619v-36.864H603.99z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "t" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "t" ]
                 [ path [ d "M603.853 773.683h60.619v-36.866h-60.619z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "u" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "u" ]
                 [ path [ d "M603.853 763.079h60.619v-36.867h-60.619z" ]
                     []
                 ]
-            , clipPath [ clipPathUnits "userSpaceOnUse", id "v" ]
+            , clipPath [ clipPathUnits "userSpaceOnUse", Attr.id "v" ]
                 [ path [ d "M603.923 752.181h60.618v-36.866h-60.618z" ]
                     []
                 ]

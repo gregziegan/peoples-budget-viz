@@ -1,8 +1,7 @@
-module City.Park exposing (ParkType(..), view)
+module City.Park exposing (ParkType(..), def, id)
 
-import City.Tile as Tile exposing (Tile)
 import Svg exposing (Svg, defs, path, svg)
-import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
+import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox, xlinkHref)
 
 
 type ParkType
@@ -11,22 +10,37 @@ type ParkType
     | Lawn
 
 
-view : Tile -> ParkType -> Svg msg
-view tile parkType =
+def : ParkType -> Svg msg
+def parkType =
     case parkType of
         TennisCourt ->
-            tennisCourt tile
+            tennisCourt
 
         Forest ->
-            forest tile
+            forest
 
         Lawn ->
-            lawn tile
+            lawn
 
 
-tennisCourt : Tile -> Svg msg
-tennisCourt tile =
-    svg [ viewBox "0 0 108.823 79.467" ]
+id : ParkType -> String
+id parkType =
+    "park-"
+        ++ (case parkType of
+                TennisCourt ->
+                    "tennis-court"
+
+                Forest ->
+                    "forest"
+
+                Lawn ->
+                    "lawn"
+           )
+
+
+tennisCourt : Svg msg
+tennisCourt =
+    svg [ Attr.id (id TennisCourt), viewBox "0 0 108.823 79.467" ]
         [ path [ d "M60.764 72.774L6.506 38.596 48.06 12.468l54.258 34.174-41.554 26.132", fill "#d5852e" ]
             []
         , path [ d "M97.132 46.207L48.747 15.732l-37.055 23.3L60.076 69.51zM60.345 70.79L9.657 38.86l38.82-24.41 50.69 31.927L60.344 70.79", fill "#fff" ]
@@ -114,9 +128,9 @@ tennisCourt tile =
         ]
 
 
-forest : Tile -> Svg msg
-forest tile =
-    svg [ viewBox "0 0 65.126 40.953" ]
+forest : Svg msg
+forest =
+    svg [ Attr.id (id Forest), viewBox "0 0 65.126 40.953" ]
         [ path [ d "M32.563 40.953L0 20.475 32.563 0l32.563 20.475z", fill "#d8dded" ]
             []
         , path [ d "M32.563 36.863L6.503 20.475l26.06-16.386 26.06 16.386z", fill "#72a041" ]
@@ -214,9 +228,9 @@ forest tile =
         ]
 
 
-lawn : Tile -> Svg msg
-lawn tile =
-    svg [ viewBox "0 0 52.119 33.118" ]
+lawn : Svg msg
+lawn =
+    svg [ Attr.id (id Lawn), viewBox "0 0 52.119 33.118" ]
         [ path [ fill "#65a430", d "M26.06 32.774L0 16.386 26.06 0l26.06 16.386-26.06 16.388" ]
             []
         , path [ fill "#65a430", d "M28.5 31.707c0 .779-.828 1.41-1.851 1.41-1.02 0-1.852-.631-1.852-1.41 0-.78.832-1.412 1.852-1.412 1.023 0 1.852.632 1.852 1.412" ]

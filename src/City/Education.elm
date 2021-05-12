@@ -1,13 +1,22 @@
-module City.Education exposing (highSchool)
+module City.Education exposing (def, id)
 
-import City.Tile as Tile exposing (Tile)
 import Svg exposing (Svg, defs, path, svg)
 import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
 
 
-highSchool : Tile -> Svg msg
-highSchool tile =
-    svg [ viewBox "0 0 61.625 58.846" ]
+id : String
+id =
+    "education-high-school"
+
+
+def : Svg msg
+def =
+    highSchool
+
+
+highSchool : Svg msg
+highSchool =
+    svg [ Attr.id id, viewBox "0 0 61.625 58.846" ]
         [ path [ d "M15.622 21.603l15.447-9.734-15.44-10.09L.147 11.513z", fill "#d9a371" ]
             []
         , path [ d "M15.633 39.024l-.046-17.42 15.482-9.735v17.464z", fill "#d9a371" ]

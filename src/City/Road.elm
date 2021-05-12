@@ -1,8 +1,9 @@
-module City.Road exposing (Road, RoadType(..), view)
+module City.Road exposing (Road, RoadType(..), def, view)
 
 import City.Tile as Tile exposing (Rotation(..), Tile)
+import City.TileType exposing (TileType(..))
 import Svg exposing (Svg, defs, path, svg)
-import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
+import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox, xlinkHref)
 
 
 type RoadType
@@ -10,11 +11,7 @@ type RoadType
     | Tee -- North <-> West <-> South intersection
     | Junction -- 4 way intersection
     | Straight { hasCrosswalk : Bool } --  North <-> South
-    | Empty
-
-
-
---| Crosswalk -- West <-> East with a crosswalk
+    | Empty TileType
 
 
 type alias Road =
@@ -23,72 +20,145 @@ type alias Road =
     }
 
 
-view : Tile -> RoadType -> Svg msg
-view tile roadType =
-    let
-        useAlt =
-            case tile.rotation of
-                RNone ->
-                    False
+useAlt road =
+    case road.rotation of
+        RNone ->
+            False
 
-                RQuarter ->
-                    True
+        RQuarter ->
+            True
 
-                RHalf ->
-                    False
+        RHalf ->
+            False
 
-                RThreeQuarters ->
-                    True
-    in
-    svg (Tile.position tile)
-        [ Svg.g (Tile.rotate tile)
-            [ case roadType of
-                Corner ->
-                    if useAlt then
-                        cornerAlt tile
-
-                    else
-                        corner tile
-
-                Tee ->
-                    if useAlt then
-                        teeAlt tile
-
-                    else
-                        tee tile
-
-                Junction ->
-                    fourWayIntersection tile
-
-                Straight { hasCrosswalk } ->
-                    if useAlt then
-                        if hasCrosswalk then
-                            crosswalkAlt tile
-
-                        else
-                            straightAlt tile
-
-                    else if hasCrosswalk then
-                        crosswalk tile
-
-                    else
-                        straight tile
-
-                Empty ->
-                    Tile.blank tile
-            ]
-        , Svg.text_ [ Attr.x "100", Attr.y "100", Attr.fontSize "10", fill "red" ] [ Svg.text (String.fromInt tile.x ++ ", " ++ String.fromInt tile.y) ]
-        ]
+        RThreeQuarters ->
+            True
 
 
+def : Road -> Svg msg
+def road =
+    case road.style of
+        Corner ->
+            if useAlt road then
+                cornerAlt
 
---Crosswalk ->
---crosswalk tile   --todo: add crosswalk alt
+            else
+                corner
+
+        Tee ->
+            if useAlt road then
+                teeAlt
+
+            else
+                tee
+
+        Junction ->
+            fourWayIntersection
+
+        Straight { hasCrosswalk } ->
+            if useAlt road then
+                if hasCrosswalk then
+                    crosswalkAlt
+
+                else
+                    straightAlt
+
+            else if hasCrosswalk then
+                crosswalk
+
+            else
+                straight
+
+        Empty tileType ->
+            Tile.def tileType
 
 
-teeAlt : Tile -> Svg msg
-teeAlt tile =
-    svg [ viewBox "0 0 65.126 40.953" ]
+id : Road -> String
+id road =
+    case road.style of
+        Corner ->
+            if useAlt road then
+                "cornerAlt"
+
+            else
+                "corner"
+
+        Tee ->
+            if useAlt road then
+                "teeAlt"
+
+            else
+                "tee"
+
+        Junction ->
+            "fourWayIntersection"
+
+        Straight { hasCrosswalk } ->
+            if useAlt road then
+                if hasCrosswalk then
+                    "crosswalk-alt"
+
+                else
+                    "straight-alt"
+
+            else if hasCrosswalk then
+                "crosswalk"
+
+            else
+                "straight"
+
+        Empty tileType ->
+            Tile.id tileType
+
+
+view : Tile -> Road -> Svg msg
+view tile road =
+    case road.style of
+        Empty BlankTile ->
+            Svg.g []
+                [ svg (Tile.position tile)
+                    [ Svg.g []
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                        ]
+                    ]
+                ]
+
+        Empty (Park _) ->
+            Svg.g []
+                [ svg (Tile.position tile)
+                    [ Svg.g []
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                        ]
+                    ]
+                ]
+
+        Empty _ ->
+            Svg.g []
+                [ Svg.g
+                    [ Attr.transform "translate(0, -30)"
+                    ]
+                    [ svg (Tile.position tile)
+                        [ Svg.g []
+                            [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                            ]
+                        ]
+                    ]
+                ]
+
+        _ ->
+            Svg.g []
+                [ svg (Tile.position tile)
+                    [ Svg.g (Tile.rotate tile)
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                        ]
+                    , Svg.text_ [ Attr.x "100", Attr.y "100", Attr.fontSize "10", fill "red" ] [ Svg.text (String.fromInt tile.x ++ ", " ++ String.fromInt tile.y) ]
+                    ]
+                ]
+
+
+teeAlt : Svg msg
+teeAlt =
+    svg [ Attr.id (id <| Road Tee RQuarter), viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.565 40.953L0 20.476 32.565 0l32.561 20.476-32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M23.534 35.248l-14.5-9.068 23.467-14.77 14.496 9.066-23.463 14.772" ]
@@ -108,9 +178,9 @@ teeAlt tile =
         ]
 
 
-tee : Tile -> Svg msg
-tee tile =
-    svg [ viewBox "0 0 65.126 40.952" ]
+tee : Svg msg
+tee =
+    svg [ Attr.id (id <| Road Tee RNone), viewBox "0 0 65.126 40.952" ]
         [ path [ d "M32.561 40.952L0 20.475 32.561 0l32.565 20.475-32.565 20.477", fill "#dcdff0" ]
             []
         , path [ d "M23.53 35.247L9.031 26.18 41.596 5.704l14.496 9.066L23.53 35.247", fill "#a3b7dd" ]
@@ -128,9 +198,9 @@ tee tile =
         ]
 
 
-fourWayIntersection : Tile -> Svg msg
-fourWayIntersection tile =
-    svg [ viewBox "0 0 65.126 40.953" ]
+fourWayIntersection : Svg msg
+fourWayIntersection =
+    svg [ Attr.id (id <| Road Junction RNone), viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.565 40.953L0 20.476 32.565 0l32.561 20.476-32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M23.53 35.247L9.031 26.181 41.596 5.704l14.5 9.067L23.53 35.247" ]
@@ -148,9 +218,9 @@ fourWayIntersection tile =
         ]
 
 
-corner : Tile -> Svg msg
-corner tile =
-    svg [ viewBox "0 0 65.126 40.953" ]
+corner : Svg msg
+corner =
+    svg [ Attr.id (id <| Road Corner RNone), viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.561 40.953l32.565-20.477L32.561 0 0 20.476l32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M32.498 29.544l14.5-9.068L23.53 5.706 9.031 14.77l23.467 14.773" ]
@@ -170,9 +240,9 @@ corner tile =
         ]
 
 
-cornerAlt : Tile -> Svg msg
-cornerAlt tile =
-    svg [ viewBox "0 0 65.126 40.953" ]
+cornerAlt : Svg msg
+cornerAlt =
+    svg [ Attr.id (id <| Road Corner RQuarter), viewBox "0 0 65.126 40.953" ]
         [ path [ d "M32.565 0L0 20.477l32.565 20.476 32.561-20.476L32.565 0", fill "#dcdff0" ]
             []
         , path [ d "M32.628 11.409L18.13 20.477l23.467 14.77 14.5-9.066-23.47-14.771", fill "#a3b7dd" ]
@@ -194,9 +264,9 @@ cornerAlt tile =
         ]
 
 
-straight : Tile -> Svg msg
-straight tile =
-    svg (Tile.rotate tile ++ [ viewBox "0 0 65.123 40.951" ])
+straight : Svg msg
+straight =
+    svg [ Attr.id (id <| Road (Straight { hasCrosswalk = False }) RNone), viewBox "0 0 65.123 40.951" ]
         [ path [ fill "#dcdff0", d "M32.561 40.951L0 20.476 32.561 0l32.562 20.476L32.56 40.95" ]
             []
         , path [ fill "#a3b7dd", d "M23.53 35.247L9.031 26.18 41.593 5.704l14.499 9.066L23.53 35.247" ]
@@ -208,9 +278,9 @@ straight tile =
         ]
 
 
-straightAlt : Tile -> Svg msg
-straightAlt tile =
-    svg [ viewBox "0 0 65.126 40.953" ]
+straightAlt : Svg msg
+straightAlt =
+    svg [ Attr.id (id <| Road (Straight { hasCrosswalk = False }) RQuarter), viewBox "0 0 65.126 40.953" ]
         [ path [ d "M32.565 40.953l32.561-20.477L32.565 0 0 20.476l32.565 20.477", fill "#dcdff0" ]
             []
         , path [ d "M41.596 35.247l14.5-9.066L23.53 5.705 9.031 14.771l32.565 20.476", fill "#a3b7dd" ]
@@ -222,9 +292,9 @@ straightAlt tile =
         ]
 
 
-crosswalk : Tile -> Svg msg
-crosswalk tile =
-    svg [ viewBox "0 0 65.126 40.953" ]
+crosswalk : Svg msg
+crosswalk =
+    svg [ Attr.id (id <| Road (Straight { hasCrosswalk = True }) RNone), viewBox "0 0 65.126 40.953" ]
         [ path [ d "M32.565 40.953L0 20.476 32.565 0l32.561 20.476-32.561 20.477", fill "#dcdff0" ]
             []
         , path [ d "M23.53 35.247L9.035 26.181 41.596 5.705l14.5 9.066L23.53 35.247", fill "#a3b7dd" ]
@@ -242,9 +312,9 @@ crosswalk tile =
         ]
 
 
-crosswalkAlt : Tile -> Svg msg
-crosswalkAlt tile =
-    svg [ viewBox "0 0 65.126 40.953" ]
+crosswalkAlt : Svg msg
+crosswalkAlt =
+    svg [ Attr.id (id <| Road (Straight { hasCrosswalk = True }) RQuarter), viewBox "0 0 65.126 40.953" ]
         [ path [ fill "#dcdff0", d "M32.561 40.953l32.565-20.477L32.561 0 0 20.476l32.561 20.477" ]
             []
         , path [ fill "#a3b7dd", d "M41.592 35.248l14.5-9.067L23.53 5.705 9.031 14.771l32.561 20.477" ]

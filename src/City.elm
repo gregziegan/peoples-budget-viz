@@ -1,10 +1,9 @@
 module City exposing (Budget, City, changeBudget, generate, init, initialBudget, visualization)
 
-import City.Building as Building exposing (BuildingType(..))
-import City.Education as Education
-import City.Hospital as Hospital exposing (HospitalType(..))
-import City.Housing as Housing exposing (HousingType(..))
-import City.Park as Park exposing (ParkType(..))
+import City.Building exposing (BuildingType(..))
+import City.Hospital exposing (HospitalType(..))
+import City.Housing exposing (HousingType(..))
+import City.Park exposing (ParkType(..))
 import City.Road as Road exposing (Road, RoadType(..))
 import City.Tile as Tile exposing (Rotation(..), Tile)
 import City.TileType exposing (TileType(..))
@@ -70,7 +69,23 @@ generateOneOf _ =
       , Road Tee RQuarter
       , Road Tee RHalf
       , Road Tee RThreeQuarters
-      , Road Empty RNone
+      , Road (Empty BlankTile) RNone
+      , Road (Empty (Housing <| TallApartment 1)) RNone
+      , Road (Empty (Housing <| TallApartment 2)) RNone
+      , Road (Empty (Housing <| TallApartment 3)) RNone
+      , Road (Empty (Hospital Clinic)) RNone
+      , Road (Empty (Park Lawn)) RNone
+      , Road (Empty (Park Forest)) RNone
+      , Road (Empty (Building Skyscraper)) RNone
+
+      --   , Road (Empty (Building FastFood)) RNone
+      , Road (Empty (Building Grocery)) RNone
+      , Road (Empty (Building Shop)) RNone
+      , Road (Empty (Building DepartmentStore)) RNone
+      , Road (Empty (Building SmallMultiuse)) RNone
+      , Road (Empty (Building MediumMultiuse)) RNone
+      , Road (Empty (Building Office)) RNone
+      , Road (Empty (Building LargeOffice)) RNone
       ]
     )
 
@@ -90,16 +105,26 @@ validateNeighbors possibleThisTiles possibleNeighbors neighborDirection =
             ( Road (Straight { hasCrosswalk = True }) RNone, [] )
 
 
+isEmptyRoad : Road -> Bool
+isEmptyRoad neighbor =
+    case neighbor.style of
+        Empty _ ->
+            True
+
+        _ ->
+            False
+
+
 validJunction : Neighbor -> Road -> Road -> Bool
 validJunction neighborDirection self neighbor =
     case ( self.style, self.rotation, neighborDirection ) of
         -- Straight
         -- Straight _, North neighbor
         ( Straight _, RQuarter, North ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Straight _, RThreeQuarters, North ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Straight _, RNone, North ) ->
             case ( neighbor.style, neighbor.rotation ) of
@@ -161,10 +186,10 @@ validJunction neighborDirection self neighbor =
 
         -- Straight _, South neighbor
         ( Straight _, RQuarter, South ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Straight _, RThreeQuarters, South ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Straight _, RNone, South ) ->
             case ( neighbor.style, neighbor.rotation ) of
@@ -284,10 +309,10 @@ validJunction neighborDirection self neighbor =
                     False
 
         ( Straight _, RNone, East ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Straight _, RHalf, East ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         -- Straight _, West neighbor
         ( Straight _, RQuarter, West ) ->
@@ -349,18 +374,18 @@ validJunction neighborDirection self neighbor =
                     False
 
         ( Straight _, RNone, West ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Straight _, RHalf, West ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         -- Corner
         -- Corner, North neighbor
         ( Corner, RNone, North ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Corner, RQuarter, North ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Corner, RHalf, North ) ->
             case ( neighbor.style, neighbor.rotation ) of
@@ -444,14 +469,14 @@ validJunction neighborDirection self neighbor =
                     False
 
         ( Corner, RHalf, South ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Corner, RThreeQuarters, South ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         -- Corner, East neighbor
         ( Corner, RNone, East ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Corner, RQuarter, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
@@ -491,7 +516,7 @@ validJunction neighborDirection self neighbor =
                     False
 
         ( Corner, RThreeQuarters, East ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         -- Corner, West neighbor
         ( Corner, RNone, West ) ->
@@ -512,10 +537,10 @@ validJunction neighborDirection self neighbor =
                     False
 
         ( Corner, RQuarter, West ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Corner, RHalf, West ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Corner, RThreeQuarters, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
@@ -597,7 +622,7 @@ validJunction neighborDirection self neighbor =
                     False
 
         ( Tee, RQuarter, North ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Tee, RHalf, North ) ->
             case ( neighbor.style, neighbor.rotation ) of
@@ -656,11 +681,11 @@ validJunction neighborDirection self neighbor =
                     False
 
         ( Tee, RThreeQuarters, South ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         -- Tee, East neighbor
         ( Tee, RNone, East ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Tee, RQuarter, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
@@ -719,7 +744,7 @@ validJunction neighborDirection self neighbor =
                     False
 
         ( Tee, RHalf, West ) ->
-            neighbor.style == Empty
+            isEmptyRoad neighbor
 
         ( Tee, RThreeQuarters, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
@@ -732,7 +757,7 @@ validJunction neighborDirection self neighbor =
                 _ ->
                     False
 
-        ( Empty, _, North ) ->
+        ( Empty _, _, North ) ->
             case ( neighbor.style, neighbor.rotation ) of
                 ( Straight _, RQuarter ) ->
                     True
@@ -749,13 +774,13 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RThreeQuarters ) ->
                     True
 
-                ( Empty, _ ) ->
+                ( Empty _, _ ) ->
                     True
 
                 _ ->
                     False
 
-        ( Empty, _, South ) ->
+        ( Empty _, _, South ) ->
             case ( neighbor.style, neighbor.rotation ) of
                 ( Straight _, RQuarter ) ->
                     True
@@ -772,13 +797,13 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RQuarter ) ->
                     True
 
-                ( Empty, _ ) ->
+                ( Empty _, _ ) ->
                     True
 
                 _ ->
                     False
 
-        ( Empty, _, West ) ->
+        ( Empty _, _, West ) ->
             case ( neighbor.style, neighbor.rotation ) of
                 ( Straight _, RNone ) ->
                     True
@@ -795,13 +820,13 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RNone ) ->
                     True
 
-                ( Empty, _ ) ->
+                ( Empty _, _ ) ->
                     True
 
                 _ ->
                     False
 
-        ( Empty, _, East ) ->
+        ( Empty _, _, East ) ->
             case ( neighbor.style, neighbor.rotation ) of
                 ( Straight _, RNone ) ->
                     True
@@ -818,7 +843,7 @@ validJunction neighborDirection self neighbor =
                 ( Tee, RHalf ) ->
                     True
 
-                ( Empty, _ ) ->
+                ( Empty _, _ ) ->
                     True
 
                 _ ->
@@ -830,51 +855,23 @@ changeBudget budget city =
     { city | parks = round budget.parks }
 
 
-parkFromId : Int -> ParkType
-parkFromId id =
-    if modBy 2 id == 0 then
-        Forest
-
-    else
-        Lawn
-
-
-viewTile : Tile -> TileType -> Svg msg
-viewTile tile tileType =
-    Svg.g (Tile.rotate tile)
-        [ case tileType of
-            Building buildingType ->
-                Building.view tile buildingType
-
-            Hospital hospitalType ->
-                Hospital.view tile hospitalType
-
-            Park parkType ->
-                Park.view tile parkType
-
-            Education ->
-                Education.highSchool tile
-
-            Housing housingType ->
-                Housing.view tile housingType
-
-            BlankTile ->
-                Tile.blank tile
-        ]
-
-
-drawRoad : ( Int, Int ) -> Road -> Svg msg
-drawRoad ( x, y ) { style, rotation } =
+drawRoad : ( Int, Int ) -> Road -> ( Svg msg, { x : Int, y : Int, style : RoadType } )
+drawRoad ( x, y ) road =
     let
         tile =
-            Tile.default ( x, y ) rotation
+            Tile.default ( x, y ) road.rotation
     in
-    Road.view tile style
+    ( Road.view tile road
+    , { x = x
+      , y = y
+      , style = road.style
+      }
+    )
 
 
-drawUndecided : ( Int, Int ) -> String -> Svg msg
-drawUndecided position style =
-    Tile.blank (Tile.default position RNone)
+drawUndecided : ( Int, Int ) -> String -> ( Svg msg, TileInfo )
+drawUndecided ( x, y ) style =
+    ( Tile.blank, { x = x, y = y, style = Empty BlankTile } )
 
 
 cellStyleToString : RoadType -> String
@@ -896,7 +893,7 @@ cellStyleToString style =
         Corner ->
             "Corner"
 
-        Empty ->
+        Empty _ ->
             "Empty"
 
 
@@ -905,7 +902,11 @@ cellStyleToString style =
 --"Crosswalk"
 
 
-drawTile : ( Int, Int ) -> ( Road, List Road ) -> Svg msg
+type alias TileInfo =
+    { x : Int, y : Int, style : RoadType }
+
+
+drawTile : ( Int, Int ) -> ( Road, List Road ) -> ( Svg msg, TileInfo )
 drawTile pos ( road, roads ) =
     case roads of
         [] ->
@@ -915,14 +916,106 @@ drawTile pos ( road, roads ) =
             drawUndecided pos (String.join "\n" (List.map (\{ style } -> cellStyleToString style) (road :: roads)))
 
 
+allTiles =
+    List.concat
+        [ [ Road (Straight { hasCrosswalk = False }) RNone
+          , Road (Straight { hasCrosswalk = False }) RQuarter
+          , Road (Straight { hasCrosswalk = True }) RNone
+          , Road (Straight { hasCrosswalk = True }) RQuarter
+          , Road Junction RNone
+          , Road Tee RNone
+          , Road Tee RQuarter
+          ]
+        , List.map (\tile -> Road (Empty tile) RNone)
+            [ Housing House
+            , Housing LargeHouse
+            , Housing MediumApartment
+            , Housing (TallApartment 0)
+            , Housing (TallApartment 1)
+            , Housing (TallApartment 2)
+            , Building Skyscraper
+            , Building Shop
+            , Building DepartmentStore
+            , Building SmallMultiuse
+            , Building MediumMultiuse
+            , Building Grocery
+            , Building FastFood
+            , Building Office
+            , Building LargeOffice
+            , Education
+            , Hospital Clinic
+            , Hospital Large
+            , Park TennisCourt
+            , Park Forest
+            , Park Lawn
+            , BlankTile
+            ]
+        ]
+
+
+defs : List (Svg msg)
+defs =
+    [ Svg.defs [] (List.map Road.def allTiles) ]
+
+
 visualization : Board Road -> City -> Element msg
 visualization board city =
+    let
+        tiles =
+            Tiler.map drawTile board
+
+        buildings =
+            tiles
+                |> List.filterMap
+                    (\( tile, info ) ->
+                        case info.style of
+                            Empty BlankTile ->
+                                Nothing
+
+                            Empty _ ->
+                                Just ( tile, info )
+
+                            _ ->
+                                Nothing
+                    )
+                |> List.sortWith
+                    (\( tile, info ) ( tile2, info2 ) ->
+                        if info.x < info2.x || info.y > info2.y then
+                            LT
+
+                        else if info.x == info2.x && info.y == info2.y then
+                            EQ
+
+                        else
+                            GT
+                    )
+                |> List.map Tuple.first
+
+        roads =
+            List.map
+                (\( tile, info ) ->
+                    case info.style of
+                        Empty BlankTile ->
+                            tile
+
+                        Empty _ ->
+                            drawRoad ( info.x, info.y ) (Road (Empty BlankTile) RNone)
+                                |> Tuple.first
+
+                        _ ->
+                            tile
+                )
+                tiles
+    in
     Element.column [ Element.centerX ]
         [ Element.el [ Element.width shrink, Element.height shrink ]
             (Element.html
                 (svg
                     [ style "border: 1px grey solid", Attr.height "1200", Attr.width "1600" ]
-                    (Tiler.map drawTile board)
+                    (defs
+                        ++ roads
+                        ++ buildings
+                    )
                 )
             )
         ]
