@@ -82,6 +82,7 @@ generateOneOf ( x, y ) =
             , Road (Empty (Hospital Clinic)) RNone
             , Road (Empty (Park Lawn)) RNone
             , Road (Empty (Park Forest)) RNone
+            , Road (Empty (Park Playground)) RNone
             , Road (Empty (Building Skyscraper)) RNone
 
             --   , Road (Empty (Building FastFood)) RNone
@@ -92,6 +93,8 @@ generateOneOf ( x, y ) =
             , Road (Empty (Building MediumMultiuse)) RNone
             , Road (Empty (Building Office)) RNone
             , Road (Empty (Building LargeOffice)) RNone
+            , Road (Empty (Building PoliceStation)) RNone
+            , Road (Empty (Building TrainStation)) RNone
             ]
     in
     ( Road (Straight { hasCrosswalk = False }) RNone
@@ -991,6 +994,9 @@ allTiles =
             , Park TennisCourt
             , Park Forest
             , Park Lawn
+            , Park Playground
+            , Building PoliceStation
+            , Building TrainStation
             , BlankTile
             ]
         ]

@@ -401,7 +401,7 @@ viewInteractiveCity model =
                 { onPress = Just NewCity, label = Element.text "Generate another city" }
             , case model.originalSeed of
                 Just originalSeed ->
-                    Element.link (buttonStyles ++ [ Border.width 0, Background.color (Element.rgb255 0 200 100), Font.color (Element.rgb255 255 255 255) ])
+                    Element.link (buttonStyles ++ [ Border.width 0, Background.color Palette.color.secondary, Font.color (Element.rgb255 255 255 255) ])
                         { url = "/?seed=" ++ String.fromInt originalSeed
                         , label =
                             Element.text "Share your city"

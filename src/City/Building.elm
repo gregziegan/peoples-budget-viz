@@ -1,7 +1,7 @@
 module City.Building exposing (BuildingType(..), def, id)
 
 import Svg exposing (Svg, clipPath, defs, g, path, svg)
-import Svg.Attributes as Attr exposing (clipPathUnits, d, fill, opacity, style, transform, viewBox)
+import Svg.Attributes as Attr exposing (clipPathUnits, cx, cy, d, fill, opacity, rx, ry, style, transform, viewBox)
 
 
 type BuildingType
@@ -14,6 +14,8 @@ type BuildingType
     | FastFood
     | Office
     | LargeOffice
+    | TrainStation
+    | PoliceStation
 
 
 def : BuildingType -> Svg msg
@@ -46,6 +48,12 @@ def buildingType =
         LargeOffice ->
             largeOffice
 
+        TrainStation ->
+            trainStation
+
+        PoliceStation ->
+            policeStation
+
 
 id : BuildingType -> String
 id buildingType =
@@ -76,6 +84,12 @@ id buildingType =
 
         LargeOffice ->
             "large-office"
+
+        TrainStation ->
+            "train-station"
+
+        PoliceStation ->
+            "police-station"
 
 
 skyscraper : Svg msg
@@ -2195,4 +2209,678 @@ largeOffice =
             []
         , path [ d "M14.758 25.533v-3.452l1.943 1.262v3.452z", fill "#0d343d" ]
             []
+        ]
+
+
+trainStation : Svg msg
+trainStation =
+    svg
+        [ Attr.id (id TrainStation)
+        , viewBox "0 0 294.585 236.22"
+        ]
+        [ Svg.defs []
+            [ Svg.clipPath
+                [ clipPathUnits "userSpaceOnUse"
+                , Attr.id "b"
+                ]
+                [ path
+                    [ d "M1068.58 1045.64h34.24v-20.21h-34.24z"
+                    ]
+                    []
+                ]
+            , Svg.clipPath
+                [ clipPathUnits "userSpaceOnUse"
+                , Attr.id "a"
+                ]
+                [ path
+                    [ d "M1107.73 1023.4h34.24v-20.21h-34.24z"
+                    ]
+                    []
+                ]
+            ]
+        , path
+            [ style "fill:silver;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+            , d "M0 132.283l114.56-66.141 180.025 103.937-114.56 66.141z"
+            ]
+            []
+        , Svg.g
+            [ style "opacity:.5"
+            , Attr.clipPath "url(#a)"
+            , transform "matrix(1.33333 0 0 -1.33333 -1370.143 1497.75)"
+            ]
+            [ path
+                [ style "fill:#231f20;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M1141.969 1009.154l-10.033-5.96-24.203 15.287 9.568 4.923z"
+                ]
+                []
+            ]
+        , path
+            [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M109.125 139.848l3.211 2.032v-7.754l-3.21-2.032z"
+            ]
+            []
+        , path
+            [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M109.125 132.093l.916-.625 3.212 2.033-.917.624z"
+            ]
+            []
+        , path
+            [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M113.253 141.256l-.916.625v-7.756l.916-.624z"
+            ]
+            []
+        , path
+            [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M136.584 156.93l3.21 2.032v-7.754l-3.21-2.032z"
+            ]
+            []
+        , path
+            [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M136.584 149.175l.916-.625 3.212 2.033-.918.624z"
+            ]
+            []
+        , path
+            [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M140.711 158.338l-.916.625v-7.756l.916-.624z"
+            ]
+            []
+        , path
+            [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M121.17 137.81l3.21 2.032v-22.837l-3.21-2.033z"
+            ]
+            []
+        , path
+            [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M121.17 114.972l.916-.625 3.212 2.033-.918.624z"
+            ]
+            []
+        , path
+            [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M125.297 139.218l-.916.625v-22.838l.916-.626z"
+            ]
+            []
+        , path
+            [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M144.516 152.333l3.213 2.032v-22.838l-3.213-2.033z"
+            ]
+            []
+        , path
+            [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M144.516 129.494l.916-.625 3.215 2.033-.918.624z"
+            ]
+            []
+        , path
+            [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M148.646 153.74l-.916.626v-22.84l.916-.624z"
+            ]
+            []
+        , path
+            [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M151.008 139.774l-31.221-19.621-1.325.69 31.336 19.692z"
+            ]
+            []
+        , path
+            [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M151.008 139.774v5.044l-1.21.761v-5.044z"
+            ]
+            []
+        , path
+            [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M149.797 140.536l-31.336-19.695v5.044l31.336 19.695z"
+            ]
+            []
+        , path
+            [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M151.008 133.97l-31.221-19.623-1.325.689 31.336 19.695z"
+            ]
+            []
+        , path
+            [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M151.008 133.97v5.042l-1.21.763v-5.044z"
+            ]
+            []
+        , path
+            [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M149.797 134.731l-31.336-19.695v5.044l31.336 19.694z"
+            ]
+            []
+        , path
+            [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M149.373 145.464l-31.222-19.621-5.109 2.605 31.336 19.696z"
+            ]
+            []
+        , path
+            [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M149.373 145.464v1.048l-4.995 2.679v-1.047z"
+            ]
+            []
+        , path
+            [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M144.378 148.144l-31.336-19.695v1.047l31.336 19.694z"
+            ]
+            []
+        , path
+            [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M143.894 148.484l-31.22-19.622-5.108 2.606 31.336 19.696z"
+            ]
+            []
+        , path
+            [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+            , d "M143.894 148.484v1.046l-4.992 2.68v-1.046z"
+            ]
+            []
+        , Svg.g []
+            [ path
+                [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M138.901 151.163l-31.336-19.694v1.046l31.336 19.695z"
+                ]
+                []
+            ]
+        , Svg.g []
+            [ Svg.g
+                [ style "opacity:.5"
+                , Attr.clipPath "url(#b)"
+                , transform "matrix(1.33333 0 0 -1.33333 -1223.754 1576.534)"
+                ]
+                [ path
+                    [ style "fill:#231f20;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                    , d "M1068.58 1031.393l10.031-5.96 24.205 15.287-9.57 4.923z"
+                    ]
+                    []
+                ]
+            , path
+                [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M244.377 188.982l-3.211 2.032v-7.755l3.21-2.032z"
+                ]
+                []
+            , path
+                [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M244.377 181.227l-.916-.625-3.212 2.033.917.624z"
+                ]
+                []
+            , path
+                [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M240.25 190.39l.915.625v-7.756l-.916-.624z"
+                ]
+                []
+            , path
+                [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M216.918 206.064l-3.21 2.032v-7.754l3.21-2.032z"
+                ]
+                []
+            , path
+                [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M216.918 198.309l-.916-.625-3.212 2.033.918.624z"
+                ]
+                []
+            , path
+                [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M212.79 207.472l.917.625v-7.756l-.916-.624z"
+                ]
+                []
+            , path
+                [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M232.332 186.944l-3.21 2.032V166.14l3.21-2.033z"
+                ]
+                []
+            , path
+                [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M232.332 164.106l-.916-.626-3.212 2.034.918.624z"
+                ]
+                []
+            , path
+                [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M228.205 188.352l.916.625V166.14l-.916-.626z"
+                ]
+                []
+            , path
+                [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M208.983 201.466l-3.21 2.032v-22.837l3.21-2.033z"
+                ]
+                []
+            , path
+                [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M208.983 178.628l-.916-.625-3.212 2.033.918.624z"
+                ]
+                []
+            , path
+                [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M204.856 202.874l.916.625v-22.838l-.916-.626z"
+                ]
+                []
+            , path
+                [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M202.494 188.908l31.221-19.621 1.325.689-31.336 19.693z"
+                ]
+                []
+            , path
+                [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M202.494 188.908v5.044l1.21.761v-5.044z"
+                ]
+                []
+            , path
+                [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M203.705 189.67l31.336-19.695v5.044l-31.336 19.695z"
+                ]
+                []
+            , path
+                [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M202.494 183.103l31.221-19.622 1.325.689-31.336 19.695z"
+                ]
+                []
+            , path
+                [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M202.494 183.103v5.043l1.21.763v-5.044z"
+                ]
+                []
+            , path
+                [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M203.705 183.865l31.336-19.695v5.044l-31.336 19.694z"
+                ]
+                []
+            , path
+                [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M204.13 194.598l31.22-19.621 5.107 2.605-31.333 19.696z"
+                ]
+                []
+            , path
+                [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M204.13 194.598v1.048l4.994 2.679v-1.047z"
+                ]
+                []
+            , path
+                [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M209.124 197.278l31.333-19.695v1.047l-31.333 19.694z"
+                ]
+                []
+            , path
+                [ style "fill:#f7fafd;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M209.606 197.618l31.221-19.622 5.107 2.606-31.334 19.696z"
+                ]
+                []
+            , path
+                [ style "fill:#e2e2e1;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                , d "M209.606 197.618v1.046l4.994 2.68v-1.046z"
+                ]
+                []
+            , Svg.g []
+                [ path
+                    [ style "fill:#989898;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                    , d "M214.6 200.297l31.334-19.694v1.046L214.6 201.344z"
+                    ]
+                    []
+                ]
+            ]
+        , Svg.g []
+            [ path
+                [ style "fill:#eb875b;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                , d "M222.575 98.268v56.693l6.547 3.78v-56.694z"
+                ]
+                []
+            , path
+                [ style "fill:#bd5f21;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                , d "M229.122 158.74l6.546-3.78v-49.133l-6.546-3.78z"
+                ]
+                []
+            ]
+        , Svg.g []
+            [ path
+                [ d "M163.658 132.283v56.693l6.547 3.78v-56.693z"
+                , style "fill:#eb875b;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ d "M170.205 192.756l6.546-3.78v-49.133l-6.546-3.78z"
+                , style "fill:#bd5f21;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            ]
+        , path
+            [ style "fill:#eb875b;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+            , d "M114.56 28.346v37.796l32.733 18.897V47.244z"
+            ]
+            []
+        , path
+            [ style "fill:#bd5f21;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+            , d "M147.292 85.04l16.366-28.347 16.366 9.449V28.346l-32.731 18.898z"
+            ]
+            []
+        , path
+            [ style "fill:#7b91ee;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+            , d "M130.927 18.898l-16.366 9.448 32.731 18.898z"
+            ]
+            []
+        , path
+            [ style "fill:#7b91ee;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+            , d "M163.658 56.693l49.098 28.346-32.732 56.693-114.56-66.141 32.731-56.693 16.366 9.448v37.796l32.731 18.897z"
+            ]
+            []
+        , path
+            [ style "fill:#3469b5;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+            , d "M180.024 141.732l65.464-37.795-32.732-18.898zM130.927 18.898l16.365 28.346 32.732-18.898L163.658 0z"
+            ]
+            []
+        , Svg.ellipse
+            [ style "fill:#fffddf;fill-opacity:1;stroke:none;stroke-width:.34049946;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+            , cx "90.726"
+            , cy "111.85"
+            , rx "9.942"
+            , ry "12.686"
+            , transform "matrix(.88408 -.46734 .45544 .89027 0 0)"
+            ]
+            []
+        , path
+            [ style "opacity:.95999995;fill:none;stroke:#5d5a5a;stroke-width:.64550036px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1"
+            , d "M130.927 50.394v6.299l3.273 3.15"
+            ]
+            []
+        , path
+            [ style "fill:#eb875b;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+            , d "M81.83 85.04v56.692l-6.547-3.78V81.26z"
+            ]
+            []
+        , path
+            [ style "fill:#bd5f21;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+            , d "M81.83 141.732l6.546-3.78V88.82l-6.547-3.78z"
+            ]
+            []
+        ]
+
+
+policeStation : Svg msg
+policeStation =
+    svg
+        [ Attr.id (id PoliceStation)
+        , Attr.viewBox "0 0 91.535 85"
+        ]
+        [ Svg.defs []
+            [ Svg.linearGradient
+                [ Attr.id "a"
+                ]
+                [ Svg.stop
+                    [ Attr.offset "0"
+                    , Attr.style "stop-color:#fff;stop-opacity:1"
+                    ]
+                    []
+                , Svg.stop
+                    [ Attr.offset "1"
+                    , Attr.style "stop-color:#9b9b9b;stop-opacity:0"
+                    ]
+                    []
+                ]
+            , Svg.linearGradient
+                [ Attr.gradientUnits "userSpaceOnUse"
+                , Attr.y2 "173"
+                , Attr.x2 "-1.664"
+                , Attr.y1 "179.5"
+                , Attr.x1 "-4.425"
+                , Attr.id "b"
+                , Attr.xlinkHref "#a"
+                , Attr.gradientTransform "rotate(-179.78 0 179.5)"
+                ]
+                []
+            , Svg.pattern
+                [ Attr.patternUnits "userSpaceOnUse"
+                , Attr.width "6"
+                , Attr.height "1"
+                , Attr.patternTransform "scale(10)"
+                , Attr.id "c"
+                ]
+                [ path
+                    [ Attr.style "fill:#000;stroke:none"
+                    , Attr.d "M0-.5h1v2H0z"
+                    ]
+                    []
+                ]
+            ]
+        , Svg.g
+            [ Attr.transform "translate(33.286 -122)"
+            ]
+            [ path
+                [ Attr.d "M16.643 207l-49.929-30 16.643-10v10l33.286 20 24.964-15v-10l16.643 10z"
+                , Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#090800;fill-opacity:.23222752;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                , Attr.d "M16.643 197l4.213.011 26.481-15.758-5.793-3.328.063 4.075z"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#5467af;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                , Attr.d "M33.286 147l-16.643 10v10l16.643-10z"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#c49600;fill-opacity:1;stroke:none;stroke-width:1.20000005;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M28.354 152.547c.724.966.369 3.019-.795 4.594-1.164 1.575-2.7 2.08-3.435 1.13-.736-.95-.396-2.997.76-4.582 1.157-1.584 2.696-2.11 3.443-1.176"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#ffe400;fill-opacity:1;stroke:none;stroke-width:.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M26.487 158.252l-.767-.66-1.156.873.206-1.592-.83-.548L24.964 155l.121-1.557 1.072-.06.981-1.393.312 1.25 1.102-.18-.683 1.619.393 1.168-1.163.768-.612 1.637"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#3d69da;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                , Attr.d "M16.643 157l-24.964-15v10l24.964 15z"
+                ]
+                []
+            , Svg.g
+                [ Attr.style "font-style:normal;font-weight:400;font-size:4.58611107px;line-height:1.25;font-family:sans-serif;letter-spacing:0;word-spacing:0;fill:#000;fill-opacity:1;stroke:none;stroke-width:.26458332"
+                ]
+                [ path
+                    [ Attr.d "M-3.68 146.893v2.019l.407.245c.151.09.268.073.35-.052.083-.126.124-.35.124-.675a2.39 2.39 0 0 0-.124-.819c-.082-.225-.199-.382-.35-.473l-.408-.245m-.324-.792l.732.44c.27.161.472.42.609.775.138.355.207.794.207 1.32 0 .53-.069.89-.207 1.077-.137.19-.34.203-.609.041l-.408-.245v2.16l-.324-.195V146.1M0 149c-.236-.142-.423-.057-.562.253-.138.31-.207.805-.207 1.484 0 .676.069 1.253.207 1.73.14.476.326.786.562.927.236.142.422.057.559-.254.138-.31.207-.804.207-1.48 0-.68-.07-1.258-.207-1.734-.137-.476-.323-.784-.559-.926m0-.59c.336.202.605.616.806 1.244.201.624.302 1.361.302 2.21 0 .848-.1 1.464-.302 1.85-.201.382-.47.472-.806.27-.337-.202-.607-.616-.81-1.242-.2-.624-.301-1.361-.301-2.21 0-.85.1-1.466.302-1.85.202-.384.472-.475.809-.272M2.662 150.107l.325.195v4.761l1.167.701v.612l-1.492-.896v-5.373M5.54 151.836l.324.195v5.373l-.324-.195v-5.373M9.352 154.54v.767a3.568 3.568 0 0 0-.35-.722 1.284 1.284 0 0 0-.393-.405c-.274-.165-.484-.103-.63.187-.145.286-.218.785-.218 1.495 0 .708.073 1.294.218 1.758.146.462.356.775.63.94.139.083.27.106.393.067.124-.038.241-.138.35-.3v.759a.598.598 0 0 1-.361.171.672.672 0 0 1-.402-.112c-.362-.218-.648-.638-.857-1.26-.209-.624-.313-1.367-.313-2.228 0-.864.104-1.482.313-1.853.209-.374.495-.451.857-.233.144.086.279.21.405.372.127.161.247.36.358.597M10.903 155.058l1.516.911v.612l-1.191-.716v1.59l1.142.687v.612l-1.142-.686v1.947l1.22.733v.612l-1.545-.928v-5.374"
+                    , Attr.style "font-size:4.58611107px;fill:#ececec;fill-opacity:1;stroke:#fff;stroke-width:.26458332;stroke-opacity:1"
+                    ]
+                    []
+                ]
+            , path
+                [ Attr.d "M16.643 157v-5l-29.125-17.5v5z"
+                , Attr.style "fill:#acacac;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M16.643 152l20.803-12.5v5L16.643 157z"
+                , Attr.style "fill:#757575;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M-12.482 134.5L8.32 122l29.125 17.5L16.643 152z"
+                , Attr.style "fill:#c7c7c7;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M-15.306 171.424a1.327 1.233 0 0 1-.422 1.694 1.327 1.233 0 0 1-1.826-.384 1.327 1.233 0 0 1 .404-1.697 1.327 1.233 0 0 1 1.83.367"
+                ]
+                []
+            , path
+                [ Attr.d "M-16.643 152l8.322-5v5l24.964 15v5z"
+                , Attr.style "fill:#fff;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M16.643 172l24.964-15-8.321-5v5l-16.643 10z"
+                , Attr.style "fill:#efefee;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M16.643 172v25l24.964-15v-25z"
+                , Attr.style "fill:#d6d6df;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M-14.965 173.503a2.844 1.485 0 0 1-.905 2.042 2.844 1.485 0 0 1-3.913-.463 2.844 1.485 0 0 1 .866-2.046 2.844 1.485 0 0 1 3.922.442"
+                , Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , Svg.ellipse
+                [ Attr.style "fill:#090800;fill-opacity:.23222752;stroke:none;stroke-width:1.45477629;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.cx "-17.413"
+                , Attr.cy "175.866"
+                , Attr.rx "2.749"
+                , Attr.ry "1.043"
+                ]
+                []
+            , path
+                [ Attr.d "M-15.558 169.528a1.327 1.233 0 0 1-.423 1.694 1.327 1.233 0 0 1-1.826-.384 1.327 1.233 0 0 1 .404-1.698 1.327 1.233 0 0 1 1.83.367"
+                , Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M-16.317 171.488a1.327 1.233 0 0 1-.422 1.693 1.327 1.233 0 0 1-1.827-.384 1.327 1.233 0 0 1 .405-1.697 1.327 1.233 0 0 1 1.83.367"
+                , Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M-16.643 152v25l33.286 20v-25z"
+                , Attr.style "fill:#efefee;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M4.16 189.5v-15l-8.32-5v15z"
+                , Attr.style "fill:#addaff;fill-opacity:1;stroke:#9f9f9f;stroke-width:.5291667;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M-14.146 163.5v7l6.657 4v-7z"
+                , Attr.style "fill:#addaff;fill-opacity:1;stroke:#989898;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:url(#b);fill-opacity:1;stroke:#9f9f9f;stroke-width:.5291667;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                , Attr.d "M-4.122 169.484l-.058 15 8.302 5.032.058-15z"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#addaff;fill-opacity:1;stroke:#989898;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                , Attr.d "M7.49 176.5v7l6.656 4v-7z"
+                ]
+                []
+            , path
+                [ Attr.style "fill:url(#c);fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                , Attr.d "M-14.146 163.5v7l6.657 4v-7z"
+                ]
+                []
+            , path
+                [ Attr.d "M32.453 172.5v7l-6.657 4v-7z"
+                , Attr.style "fill:#85abca;fill-opacity:1;stroke:#989898;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M29.183 186.87a1.919 2.136 0 0 1-.61 2.936 1.919 2.136 0 0 1-2.641-.666 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636"
+                , Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M29.183 186.87a1.919 2.136 0 0 1-.61 2.936 1.919 2.136 0 0 1-2.641-.666 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636"
+                ]
+                []
+            , path
+                [ Attr.d "M29.183 186.87a1.919 2.136 0 0 1-.61 2.936 1.919 2.136 0 0 1-2.641-.666 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636"
+                , Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M29.183 186.87a1.919 2.136 0 0 1-.61 2.936 1.919 2.136 0 0 1-2.641-.666 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636"
+                ]
+                []
+            , path
+                [ Attr.d "M29.183 186.87a1.919 2.136 0 0 1-.61 2.936 1.919 2.136 0 0 1-2.641-.666 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636"
+                , Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M29.436 188.513a1.919 2.136 0 0 1-.61 2.936 1.919 2.136 0 0 1-2.641-.666 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636M37.02 184.847a1.919 2.136 0 0 1-.61 2.936 1.919 2.136 0 0 1-2.64-.666 1.919 2.136 0 0 1 .584-2.942 1.919 2.136 0 0 1 2.646.636M30.827 183.9a1.919 2.136 0 0 1-.611 2.935 1.919 2.136 0 0 1-2.64-.666 1.919 2.136 0 0 1 .584-2.942 1.919 2.136 0 0 1 2.646.636"
+                ]
+                []
+            , path
+                [ Attr.d "M32.66 183.078a1.919 2.136 0 0 1-.611 2.935 1.919 2.136 0 0 1-2.64-.665 1.919 2.136 0 0 1 .584-2.943 1.919 2.136 0 0 1 2.646.637"
+                , Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M33.987 186.238a1.919 2.136 0 0 1-.611 2.936 1.919 2.136 0 0 1-2.64-.666 1.919 2.136 0 0 1 .584-2.942 1.919 2.136 0 0 1 2.647.636"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.1669254;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M31.405 185.587a1.856 2.23 0 0 1-.59 3.066 1.856 2.23 0 0 1-2.554-.695 1.856 2.23 0 0 1 .565-3.073 1.856 2.23 0 0 1 2.56.665"
+                ]
+                []
+            , path
+                [ Attr.d "M35.883 186.301a1.919 2.136 0 0 1-.61 2.936 1.919 2.136 0 0 1-2.641-.666 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636"
+                , Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M34.24 183.962a1.919 2.136 0 0 1-.611 2.936 1.919 2.136 0 0 1-2.64-.665 1.919 2.136 0 0 1 .584-2.943 1.919 2.136 0 0 1 2.646.637"
+                , Attr.style "fill:#75ac57;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.d "M29.5 187.123a1.919 2.136 0 0 1-.612 2.935 1.919 2.136 0 0 1-2.64-.665 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636M36.705 187.376a1.919 2.136 0 0 1-.611 2.935 1.919 2.136 0 0 1-2.64-.665 1.919 2.136 0 0 1 .584-2.943 1.919 2.136 0 0 1 2.646.637M33.102 190.03a1.919 2.136 0 0 1-.61 2.936 1.919 2.136 0 0 1-2.641-.666 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636"
+                , Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M30.7 189.398a1.919 2.136 0 0 1-.61 2.936 1.919 2.136 0 0 1-2.641-.666 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636M35.188 188.324a1.919 2.136 0 0 1-.611 2.935 1.919 2.136 0 0 1-2.64-.665 1.919 2.136 0 0 1 .584-2.943 1.919 2.136 0 0 1 2.646.637"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M33.292 186.554a1.919 2.136 0 0 1-.611 2.936 1.919 2.136 0 0 1-2.64-.666 1.919 2.136 0 0 1 .584-2.942 1.919 2.136 0 0 1 2.646.636"
+                ]
+                []
+            , path
+                [ Attr.d "M34.24 184.531a1.919 2.136 0 0 1-.611 2.936 1.919 2.136 0 0 1-2.64-.666 1.919 2.136 0 0 1 .584-2.942 1.919 2.136 0 0 1 2.646.636"
+                , Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.16609821;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M31.332 183.9a1.919 2.136 0 0 1-.61 2.935 1.919 2.136 0 0 1-2.641-.666 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636M36.831 185.29a1.919 2.136 0 0 1-.61 2.935 1.919 2.136 0 0 1-2.641-.665 1.919 2.136 0 0 1 .585-2.942 1.919 2.136 0 0 1 2.646.636"
+                ]
+                []
+            , path
+                [ Attr.d "M-17.77 171.74a1.327 1.233 0 0 1-.423 1.694 1.327 1.233 0 0 1-1.826-.384 1.327 1.233 0 0 1 .404-1.697 1.327 1.233 0 0 1 1.83.367"
+                , Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#418c18;fill-opacity:1;stroke:none;stroke-width:.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M-17.139 170.16a1.327 1.233 0 0 1-.422 1.694 1.327 1.233 0 0 1-1.826-.384 1.327 1.233 0 0 1 .404-1.698 1.327 1.233 0 0 1 1.83.368"
+                ]
+                []
+            , path
+                [ Attr.d "M-4.16 184.5l-8.322 5 8.321 5 8.322-5z"
+                , Attr.style "fill:#a89e86;fill-opacity:1;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                ]
+                []
+            , path
+                [ Attr.style "fill:#fc0;fill-opacity:0;stroke:#fe0;stroke-width:1.7727083;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:52.25196838;stroke-opacity:1"
+                , Attr.d "M18.233 140.456c-3.16 1.898-8.296 1.89-11.472-.019-3.176-1.908-3.19-4.994-.03-6.893 1.517-.911 3.578-1.422 5.73-1.418 2.151.003 4.217.52 5.742 1.436 1.525.917 2.385 2.158 2.391 3.45.006 1.293-.844 2.532-2.36 3.443"
+                ]
+                []
+            , Svg.g
+                [ Attr.style "font-style:normal;font-weight:400;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0;word-spacing:0;fill:#fe0;fill-opacity:1;stroke:#fe0;stroke-width:.26458332;stroke-opacity:1"
+                ]
+                [ path
+                    [ Attr.d "M13.54 133.25l.907.546-2.916 1.751 3.295 1.98 2.915-1.752.907.545-7.112 4.273-.907-.545 3.387-2.035-3.294-1.98-3.387 2.036-.907-.545 7.112-4.273"
+                    , Attr.style "fill:#fe0;fill-opacity:1;stroke:#fe0;stroke-width:.26458332;stroke-opacity:1"
+                    ]
+                    []
+                ]
+            , path
+                [ Attr.style "fill:#090800;fill-opacity:.23222752;stroke:none;stroke-width:.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                , Attr.d "M-8.321 142v3l24.964 15v-3zM16.643 157v3l16.643-10v-3zM26.628 192c-.832 1.5 4.993 4 9.986-1 .832-.5.832-4.5 0-5l-.832 2.5c-1.59-1.992-2.799 1.373-5.825 2.5z"
+                ]
+                []
+            ]
         ]
