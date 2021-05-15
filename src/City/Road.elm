@@ -134,6 +134,50 @@ view tile road =
                     ]
                 ]
 
+        Empty (Building SmallMultiuse) ->
+            Svg.g
+                [ Attr.transform "translate(0, -15)"
+                ]
+                [ svg (Tile.position { tile | width = 100, height = 100 })
+                    [ Svg.g []
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                        ]
+                    ]
+                ]
+
+        Empty (Building DepartmentStore) ->
+            Svg.g
+                [ Attr.transform "translate(0, -15)"
+                ]
+                [ svg (Tile.position { tile | width = 100, height = 100 })
+                    [ Svg.g []
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                        ]
+                    ]
+                ]
+
+        Empty (Building Office) ->
+            Svg.g
+                [ Attr.transform "translate(10, -10)"
+                ]
+                [ svg (Tile.position { tile | width = 100, height = 100 })
+                    [ Svg.g []
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                        ]
+                    ]
+                ]
+
+        Empty (Building LargeOffice) ->
+            Svg.g
+                [ Attr.transform "translate(0, -15)"
+                ]
+                [ svg (Tile.position { tile | width = 100, height = 100 })
+                    [ Svg.g []
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                        ]
+                    ]
+                ]
+
         Empty (Building MediumMultiuse) ->
             Svg.g
                 [ Attr.transform "translate(0, -15)"
