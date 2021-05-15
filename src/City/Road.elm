@@ -1,5 +1,7 @@
 module City.Road exposing (Road, RoadType(..), def, view)
 
+import City.Building exposing (BuildingType(..))
+import City.Housing exposing (HousingType(..))
 import City.Tile as Tile exposing (Rotation(..), Tile)
 import City.TileType exposing (TileType(..))
 import Svg exposing (Svg, defs, path, svg)
@@ -115,8 +117,28 @@ view : Tile -> Road -> Svg msg
 view tile road =
     case road.style of
         Empty BlankTile ->
-            Svg.g []
-                [ svg (Tile.position tile)
+            svg (Tile.position tile)
+                [ Svg.g []
+                    [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                    ]
+                ]
+
+        Empty (Building Skyscraper) ->
+            Svg.g
+                [ Attr.transform "translate(0, -100)"
+                ]
+                [ svg (Tile.position { tile | width = 100, height = 200 })
+                    [ Svg.g []
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                        ]
+                    ]
+                ]
+
+        Empty (Building MediumMultiuse) ->
+            Svg.g
+                [ Attr.transform "translate(0, -15)"
+                ]
+                [ svg (Tile.position { tile | width = 100, height = 100 })
                     [ Svg.g []
                         [ Svg.use [ xlinkHref ("#" ++ id road) ] []
                         ]
@@ -124,8 +146,39 @@ view tile road =
                 ]
 
         Empty (Park _) ->
-            Svg.g []
-                [ svg (Tile.position tile)
+            svg (Tile.position tile)
+                [ Svg.g []
+                    [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                    ]
+                ]
+
+        Empty (Housing House) ->
+            Svg.g
+                [ Attr.transform "translate(15, 10)"
+                ]
+                [ svg (Tile.position { tile | width = 75, height = 75 })
+                    [ Svg.g []
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                        ]
+                    ]
+                ]
+
+        Empty (Housing LargeHouse) ->
+            Svg.g
+                [ Attr.transform "translate(5, 15)"
+                ]
+                [ svg (Tile.position { tile | width = 75, height = 75 })
+                    [ Svg.g []
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
+                        ]
+                    ]
+                ]
+
+        Empty (Housing (TallApartment _)) ->
+            Svg.g
+                [ Attr.transform "translate(0, -40)"
+                ]
+                [ svg (Tile.position { tile | width = 100, height = 125 })
                     [ Svg.g []
                         [ Svg.use [ xlinkHref ("#" ++ id road) ] []
                         ]
@@ -133,26 +186,22 @@ view tile road =
                 ]
 
         Empty _ ->
-            Svg.g []
-                [ Svg.g
-                    [ Attr.transform "translate(0, -30)"
-                    ]
-                    [ svg (Tile.position tile)
-                        [ Svg.g []
-                            [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                            ]
+            Svg.g
+                [ Attr.transform "translate(0, -30)"
+                ]
+                [ svg (Tile.position tile)
+                    [ Svg.g []
+                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
                         ]
                     ]
                 ]
 
         _ ->
-            Svg.g []
-                [ svg (Tile.position tile)
-                    [ Svg.g (Tile.rotate tile)
-                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                        ]
-                    , Svg.text_ [ Attr.x "100", Attr.y "100", Attr.fontSize "10", fill "red" ] [ Svg.text (String.fromInt tile.x ++ ", " ++ String.fromInt tile.y) ]
+            svg (Tile.position tile)
+                [ Svg.g (Tile.rotate tile)
+                    [ Svg.use [ xlinkHref ("#" ++ id road) ] []
                     ]
+                , Svg.text_ [ Attr.x "100", Attr.y "100", Attr.fontSize "10", fill "red" ] [ Svg.text (String.fromInt tile.x ++ ", " ++ String.fromInt tile.y) ]
                 ]
 
 
