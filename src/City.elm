@@ -73,29 +73,48 @@ generateOneOf ( x, y ) =
             , Road (Empty BlankTile) RNone
             ]
 
-        buildings =
+        tallBuildings =
             [ Road (Empty (Housing <| TallApartment 1)) RNone
             , Road (Empty (Housing <| TallApartment 2)) RNone
             , Road (Empty (Housing <| TallApartment 3)) RNone
-            , Road (Empty (Housing House)) RNone
+            , Road (Empty (Hospital Clinic)) RNone
+            , Road (Empty (Building Skyscraper)) RNone
+            , Road (Empty (Building DepartmentStore)) RNone
+            , Road (Empty (Building MediumMultiuse)) RNone
+            , Road (Empty (Building Office)) RNone
+            , Road (Empty (Building LargeOffice)) RNone
+            , Road (Empty (Building PoliceStation)) RNone
+            ]
+
+        buildings =
+            [ Road (Empty (Housing House)) RNone
             , Road (Empty (Housing LargeHouse)) RNone
             , Road (Empty (Hospital Clinic)) RNone
             , Road (Empty (Park Lawn)) RNone
             , Road (Empty (Park Forest)) RNone
             , Road (Empty (Park Playground)) RNone
-            , Road (Empty (Building Skyscraper)) RNone
 
             --   , Road (Empty (Building FastFood)) RNone
             , Road (Empty (Building Grocery)) RNone
             , Road (Empty (Building Shop)) RNone
             , Road (Empty (Building DepartmentStore)) RNone
             , Road (Empty (Building SmallMultiuse)) RNone
-            , Road (Empty (Building MediumMultiuse)) RNone
             , Road (Empty (Building Office)) RNone
-            , Road (Empty (Building LargeOffice)) RNone
             , Road (Empty (Building PoliceStation)) RNone
             , Road (Empty (Building TrainStation)) RNone
             ]
+
+        inCityCenter =
+            ((toFloat x / cityWidth)
+                < 0.7
+                && (toFloat x / cityWidth)
+                > 0.3
+            )
+                && ((toFloat y / cityHeight)
+                        < 0.7
+                        && (toFloat y / cityHeight)
+                        > 0.3
+                   )
     in
     ( Road (Straight { hasCrosswalk = False }) RNone
     , if x == 0 && y == 0 then
@@ -133,6 +152,9 @@ generateOneOf ( x, y ) =
 
       else if y == 1 || y == cityHeight - 2 then
         Road (Straight { hasCrosswalk = False }) RNone :: buildings
+
+      else if inCityCenter then
+        roads ++ tallBuildings
 
       else
         roads ++ buildings
