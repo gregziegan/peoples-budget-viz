@@ -1,4 +1,4 @@
-module City exposing (Budget, City, changeBudget, generate, init, initialBudget, visualization)
+module City exposing (Budget, City, TotalBudget, currentBudget, generate, totalBudget, visualization)
 
 import City.Building exposing (BuildingType(..))
 import City.Hospital exposing (HospitalType(..))
@@ -14,30 +14,43 @@ import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
 import Tiler exposing (Board, Neighbor(..))
 
 
-type alias Budget =
-    { parks : Float }
-
-
 type alias City =
-    { parks : Int
-    , housing : Int
-    , parkingLots : Int
+    Board Road
+
+
+type alias TotalBudget =
+    Float
+
+
+totalBudget : TotalBudget
+totalBudget =
+    1056
+
+
+type alias Range =
+    { current : Float
+    , min : Float
+    , max : Float
     }
 
 
-init :
-    { parks : Int
-    , housing : Int
-    , parkingLots : Int
+type alias Budget =
+    { police : Range
+    , housing : Range
+    , transit : Range
+    , health : Range
+    , parks : Range
     }
-    -> City
-init { parks, housing, parkingLots } =
-    { parks = parks, housing = housing, parkingLots = parkingLots }
 
 
-initialBudget : Budget
-initialBudget =
-    { parks = 1 }
+currentBudget : Budget
+currentBudget =
+    { police = Range (0.28 * totalBudget) 0 (0.28 * totalBudget)
+    , housing = Range (0.0097 * totalBudget) (0.0097 * totalBudget) (0.26 * totalBudget)
+    , transit = Range (0.0591 * totalBudget) (0.0591 * totalBudget) (0.26 * totalBudget)
+    , health = Range (0.0932 * totalBudget) (0.0932 * totalBudget) (0.26 * totalBudget)
+    , parks = Range (0.0707 * totalBudget) (0.0707 * totalBudget) (0.26 * totalBudget)
+    }
 
 
 cityWidth =
@@ -921,11 +934,6 @@ validJunction neighborDirection self neighbor =
                     False
 
 
-changeBudget : Budget -> City -> City
-changeBudget budget city =
-    { city | parks = round budget.parks }
-
-
 drawRoad : ( Int, Int ) -> Road -> ( Svg msg, { x : Int, y : Int, style : RoadType } )
 drawRoad ( x, y ) road =
     let
@@ -1029,11 +1037,11 @@ defs =
     [ Svg.defs [] (List.map Road.def allTiles) ]
 
 
-visualization : Board Road -> City -> Element msg
-visualization board city =
+visualization : Budget -> City -> Element msg
+visualization budget city =
     let
         tiles =
-            Tiler.map drawTile board
+            Tiler.map drawTile city
 
         buildings =
             tiles

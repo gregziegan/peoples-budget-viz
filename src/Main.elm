@@ -136,7 +136,6 @@ type alias Model =
     , budget : City.Budget
     , originalSeed : Maybe Int
     , randomSeed : Seed
-    , board : Board Road
     }
 
 
@@ -158,7 +157,7 @@ init urlData =
         randomSeed =
             Random.initialSeed seed
 
-        board =
+        city =
             if seed == 0 then
                 Tiler.emptyBoard
 
@@ -172,9 +171,8 @@ init urlData =
             else
                 Just seed
       , randomSeed = randomSeed
-      , board = board
-      , city = City.init { parks = 1, parkingLots = 1, housing = 1 }
-      , budget = City.initialBudget
+      , city = city
+      , budget = City.currentBudget
       }
     , Cmd.batch
         [ Task.perform InitializeRandomness Time.now
@@ -232,11 +230,18 @@ update msg model =
         ChangedParksBudget parksBudget ->
             let
                 newBudget =
-                    updateBudget (\budget -> { budget | parks = parksBudget }) model.budget
+                    updateBudget
+                        (\budget ->
+                            let
+                                parks =
+                                    budget.parks
+                            in
+                            { budget | parks = { parks | current = parksBudget } }
+                        )
+                        model.budget
             in
             ( { model
                 | budget = newBudget
-                , city = City.changeBudget newBudget model.city
               }
             , Cmd.none
             )
@@ -249,13 +254,13 @@ update msg model =
                 seed =
                     Random.initialSeed <| originalSeed
 
-                ( board, nextSeed ) =
+                ( city, nextSeed ) =
                     City.generate seed
             in
             ( { model
                 | originalSeed = Just originalSeed
                 , randomSeed = nextSeed
-                , board = board
+                , city = city
               }
             , Cmd.none
             )
@@ -274,7 +279,7 @@ update msg model =
             ( { model
                 | originalSeed = seed
                 , randomSeed = randomSeed
-                , board = Tuple.first <| City.generate randomSeed
+                , city = Tuple.first <| City.generate randomSeed
               }
             , Cmd.none
             )
@@ -355,34 +360,48 @@ pageView model siteMetadata page viewForPage =
             }
 
 
+thumb =
+    [ Element.width (Element.px 16)
+    , Element.height (Element.px 16)
+    , Border.rounded 8
+    , Border.width 1
+    , Border.color (Element.rgb 0.5 0.5 0.5)
+    , Background.color (Element.rgb 1 1 1)
+    ]
+
+
 viewParksBudgetSlider : Model -> Element Msg
 viewParksBudgetSlider model =
-    Input.slider
-        [ Element.height (Element.px 30)
+    row [ width (Element.px 400), Element.spacing 10, padding 20 ]
+        [ Element.text ("$" ++ (String.fromInt <| round <| model.budget.parks.min) ++ "M")
+        , Input.slider
+            [ Element.height (Element.px 30)
 
-        -- Here is where we're creating/styling the "track"
-        , Element.behindContent
-            (Element.el
-                [ Element.width Element.fill
-                , Element.height (Element.px 2)
-                , Element.centerY
-                , Background.color Palette.color.secondary
-                , Border.rounded 2
-                ]
-                Element.none
-            )
+            -- Here is where we're creating/styling the "track"
+            , Element.behindContent
+                (Element.el
+                    [ Element.width Element.fill
+                    , Element.height (Element.px 2)
+                    , Element.centerY
+                    , Background.color Palette.color.secondary
+                    , Border.rounded 2
+                    ]
+                    Element.none
+                )
+            ]
+            { onChange = ChangedParksBudget
+            , label =
+                Input.labelAbove [ Element.centerX ]
+                    (text "Parks Budget")
+            , min = model.budget.parks.min
+            , max = model.budget.parks.max
+            , step = Just <| (model.budget.parks.max - model.budget.parks.min) / 10.0
+            , value = model.budget.parks.current
+            , thumb =
+                Input.thumb (thumb ++ [ Element.below (Element.el [ padding 5 ] (Element.text ("$" ++ (String.fromInt <| round <| model.budget.parks.current) ++ "M"))) ])
+            }
+        , Element.text ("$" ++ (String.fromInt <| round <| model.budget.parks.max) ++ "M")
         ]
-        { onChange = ChangedParksBudget
-        , label =
-            Input.labelAbove []
-                (text "Parks Budget (in millions of USD)")
-        , min = 0
-        , max = 10
-        , step = Nothing
-        , value = model.budget.parks
-        , thumb =
-            Input.defaultThumb
-        }
 
 
 buttonStyles =
@@ -410,7 +429,7 @@ viewInteractiveCity model =
                 Nothing ->
                     Element.none
             ]
-        , Element.row [ Element.centerX ] [ City.visualization model.board model.city ]
+        , Element.row [ Element.centerX ] [ City.visualization model.budget model.city ]
         ]
 
 
