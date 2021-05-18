@@ -450,8 +450,8 @@ viewSlider label onChange range =
         ]
 
 
-viewBudget : Budget -> Element Msg
-viewBudget ({ police, housing, transit, health, parks } as budget) =
+viewEssentials : Budget -> Element Msg
+viewEssentials ({ housing, transit, health } as budget) =
     let
         originalTotal =
             City.total City.currentBudget
@@ -460,10 +460,23 @@ viewBudget ({ police, housing, transit, health, parks } as budget) =
             City.total budget
     in
     column [ width fill ]
-        [ row [ Element.centerX ] [ viewSlider "Police" ChangedPoliceBudget police ]
-        , row [ Element.centerX ] [ viewSlider "Housing" ChangedHousingBudget housing ]
+        [ row [ Element.centerX ] [ viewSlider "Housing" ChangedHousingBudget housing ]
         , row [ Element.centerX ] [ viewSlider "Transit" ChangedTransitBudget transit ]
         , row [ Element.centerX ] [ viewSlider "Health" ChangedHealthBudget health ]
+        ]
+
+
+viewServices : Budget -> Element Msg
+viewServices ({ police, parks } as budget) =
+    let
+        originalTotal =
+            City.total City.currentBudget
+
+        total =
+            City.total budget
+    in
+    column [ width fill, Element.spacing 20 ]
+        [ row [ Element.centerX ] [ viewSlider "Police" ChangedPoliceBudget police ]
         , row [ Element.centerX ] [ viewSlider "Parks" ChangedParksBudget parks ]
         , row [ Element.centerX ] [ text ("2020 Budget: $" ++ String.fromInt originalTotal ++ "M") ]
         , row
@@ -490,9 +503,8 @@ buttonStyles =
 
 
 viewInteractiveCity model =
-    Element.column [ Element.width fill, Element.spacing 10 ]
-        [ row [ Element.centerX ] [ viewBudget model.budget ]
-        , Element.row [ Element.centerX, Element.spacing 10 ]
+    column [ width fill, Element.spacing 10 ]
+        [ row [ Element.centerX, Element.spacing 10 ]
             [ Input.button
                 buttonStyles
                 { onPress = Just NewCity, label = Element.text "Generate another city" }
@@ -507,7 +519,21 @@ viewInteractiveCity model =
                 Nothing ->
                     Element.none
             ]
-        , Element.row [ Element.centerX ] [ City.visualization model.city ]
+        , row
+            [ Element.centerX
+            , Element.inFront
+                (row
+                    [ width fill
+                    ]
+                    [ column [ Element.alignLeft, Element.spacing 10 ]
+                        [ row [ Element.centerX ] [ viewEssentials model.budget ]
+                        ]
+                    , column [ Element.alignRight, Element.spacing 10 ]
+                        [ row [ Element.centerX ] [ viewServices model.budget ] ]
+                    ]
+                )
+            ]
+            [ City.visualization model.city ]
         ]
 
 

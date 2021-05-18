@@ -84,6 +84,10 @@ rangeMultiplier range roads =
         |> List.concat
 
 
+avgMultiplier roads =
+    rangeMultiplier { min = 0, max = 25, current = 15 } roads
+
+
 generateOneOf : Budget -> ( Int, Int ) -> ( Road, List Road )
 generateOneOf budget ( x, y ) =
     let
@@ -138,27 +142,27 @@ generateOneOf budget ( x, y ) =
             ]
 
         tallBuildings =
-            [ Road (Empty (Building Skyscraper)) RNone
-            , Road (Empty (Building DepartmentStore)) RNone
-            , Road (Empty (Building MediumMultiuse)) RNone
-            , Road (Empty (Building Office)) RNone
-            , Road (Empty (Building LargeOffice)) RNone
-            ]
+            avgMultiplier
+                [ Road (Empty (Building Skyscraper)) RNone
+                , Road (Empty (Building DepartmentStore)) RNone
+                , Road (Empty (Building MediumMultiuse)) RNone
+                , Road (Empty (Building Office)) RNone
+                , Road (Empty (Building LargeOffice)) RNone
+                ]
                 ++ highDensityHousing
                 ++ health
                 ++ parks
                 ++ police
 
         buildings =
-            [ Road (Empty (Hospital Clinic)) RNone
-            , Road (Empty (Park Playground)) RNone
-            , Road (Empty (Building FastFood)) RNone
-            , Road (Empty (Building Grocery)) RNone
-            , Road (Empty (Building Shop)) RNone
-            , Road (Empty (Building DepartmentStore)) RNone
-            , Road (Empty (Building SmallMultiuse)) RNone
-            , Road (Empty (Building Office)) RNone
-            ]
+            avgMultiplier
+                [ Road (Empty (Building FastFood)) RNone
+                , Road (Empty (Building Grocery)) RNone
+                , Road (Empty (Building Shop)) RNone
+                , Road (Empty (Building DepartmentStore)) RNone
+                , Road (Empty (Building SmallMultiuse)) RNone
+                , Road (Empty (Building Office)) RNone
+                ]
                 ++ lowDensityHousing
                 ++ health
                 ++ parks
