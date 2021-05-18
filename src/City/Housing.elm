@@ -343,7 +343,7 @@ house =
 
 medApartment : Svg msg
 medApartment =
-    svg [ Attr.id "housing-med-apartment", Attr.x "0", Attr.y "-60", viewBox "0 0 34.712 57.297" ]
+    svg [ Attr.id "housing-med-apartment", viewBox "0 0 34.712 57.297" ]
         [ path [ d "M1.108 29.658v17.423l16.248 10.216V39.875z", fill "#355b88" ]
             []
         , path [ d "M33.604 29.658v17.423L17.356 57.297V39.875z", fill "#30425c" ]

@@ -162,7 +162,7 @@ init urlData =
                 Tiler.emptyBoard
 
             else
-                Tuple.first <| City.generate randomSeed
+                Tuple.first <| City.generate City.currentBudget randomSeed
     in
     ( { originalSeed =
             if seed == 0 then
@@ -197,8 +197,14 @@ type Msg
     | NewCity
 
 
-updateBudget transform budget =
-    transform budget
+updateBudget : (Budget -> Budget) -> Model -> ( Model, Cmd Msg )
+updateBudget transform model =
+    ( { model
+        | budget = transform model.budget
+        , city = City.generate model.budget model.randomSeed |> Tuple.first
+      }
+    , Cmd.none
+    )
 
 
 extractSeed :
@@ -232,99 +238,59 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ChangedPoliceBudget value ->
-            let
-                newBudget =
-                    updateBudget
-                        (\budget ->
-                            let
-                                range =
-                                    budget.police
-                            in
-                            { budget | police = { range | current = value } }
-                        )
-                        model.budget
-            in
-            ( { model
-                | budget = newBudget
-              }
-            , Cmd.none
-            )
+            updateBudget
+                (\budget ->
+                    let
+                        range =
+                            budget.police
+                    in
+                    { budget | police = { range | current = value } }
+                )
+                model
 
         ChangedHousingBudget value ->
-            let
-                newBudget =
-                    updateBudget
-                        (\budget ->
-                            let
-                                range =
-                                    budget.housing
-                            in
-                            { budget | housing = { range | current = value } }
-                        )
-                        model.budget
-            in
-            ( { model
-                | budget = newBudget
-              }
-            , Cmd.none
-            )
+            updateBudget
+                (\budget ->
+                    let
+                        range =
+                            budget.housing
+                    in
+                    { budget | housing = { range | current = value } }
+                )
+                model
 
         ChangedTransitBudget value ->
-            let
-                newBudget =
-                    updateBudget
-                        (\budget ->
-                            let
-                                range =
-                                    budget.transit
-                            in
-                            { budget | transit = { range | current = value } }
-                        )
-                        model.budget
-            in
-            ( { model
-                | budget = newBudget
-              }
-            , Cmd.none
-            )
+            updateBudget
+                (\budget ->
+                    let
+                        range =
+                            budget.transit
+                    in
+                    { budget | transit = { range | current = value } }
+                )
+                model
 
         ChangedHealthBudget value ->
-            let
-                newBudget =
-                    updateBudget
-                        (\budget ->
-                            let
-                                range =
-                                    budget.health
-                            in
-                            { budget | health = { range | current = value } }
-                        )
-                        model.budget
-            in
-            ( { model
-                | budget = newBudget
-              }
-            , Cmd.none
-            )
+            updateBudget
+                (\budget ->
+                    let
+                        range =
+                            budget.health
+                    in
+                    { budget | health = { range | current = value } }
+                )
+                model
 
         ChangedParksBudget value ->
-            let
-                newBudget =
-                    updateBudget
-                        (\budget ->
-                            let
-                                range =
-                                    budget.parks
-                            in
-                            { budget | parks = { range | current = value } }
-                        )
-                        model.budget
-            in
-            ( { model
-                | budget = newBudget
-              }
-            , Cmd.none
-            )
+            updateBudget
+                (\budget ->
+                    let
+                        range =
+                            budget.parks
+                    in
+                    { budget | parks = { range | current = value } }
+                )
+                model
 
         InitializeRandomness now ->
             let
@@ -335,11 +301,11 @@ update msg model =
                     Random.initialSeed <| originalSeed
 
                 ( city, nextSeed ) =
-                    City.generate seed
+                    City.generate model.budget seed
             in
             ( { model
                 | originalSeed = Just originalSeed
-                , randomSeed = nextSeed
+                , randomSeed = seed
                 , city = city
               }
             , Cmd.none
@@ -359,7 +325,7 @@ update msg model =
             ( { model
                 | originalSeed = seed
                 , randomSeed = randomSeed
-                , city = Tuple.first <| City.generate randomSeed
+                , city = Tuple.first <| City.generate model.budget randomSeed
               }
             , Cmd.none
             )
@@ -541,7 +507,7 @@ viewInteractiveCity model =
                 Nothing ->
                     Element.none
             ]
-        , Element.row [ Element.centerX ] [ City.visualization model.budget model.city ]
+        , Element.row [ Element.centerX ] [ City.visualization model.city ]
         ]
 
 

@@ -66,14 +66,60 @@ cityHeight =
     16
 
 
-generate : Seed -> ( Board Road, Seed )
-generate seed =
-    Tiler.generateBoard cityWidth cityHeight generateOneOf validateNeighbors seed
+generate : Budget -> Seed -> ( Board Road, Seed )
+generate budget seed =
+    Tiler.generateBoard cityWidth cityHeight (generateOneOf budget) validateNeighbors seed
 
 
-generateOneOf : ( Int, Int ) -> ( Road, List Road )
-generateOneOf ( x, y ) =
+rangeMultiplier : Range -> List Road -> List Road
+rangeMultiplier range roads =
     let
+        step =
+            range.max / 5
+
+        multiplier =
+            Debug.log "multiplier" <| ceiling <| range.current / step
+    in
+    List.map (List.repeat multiplier) roads
+        |> List.concat
+
+
+generateOneOf : Budget -> ( Int, Int ) -> ( Road, List Road )
+generateOneOf budget ( x, y ) =
+    let
+        police =
+            rangeMultiplier budget.police [ Road (Empty (Building PoliceStation)) RNone ]
+
+        lowDensityHousing =
+            rangeMultiplier budget.housing
+                [ Road (Empty (Housing House)) RNone
+                , Road (Empty (Housing LargeHouse)) RNone
+                ]
+
+        highDensityHousing =
+            rangeMultiplier budget.housing
+                [ Road (Empty (Housing <| TallApartment 1)) RNone
+                , Road (Empty (Housing <| TallApartment 2)) RNone
+                , Road (Empty (Housing <| TallApartment 3)) RNone
+                , Road (Empty (Housing <| MediumApartment)) RNone
+                ]
+
+        transit =
+            rangeMultiplier budget.transit [ Road (Empty (Building TrainStation)) RNone ]
+
+        health =
+            rangeMultiplier budget.health
+                [ Road (Empty (Hospital Clinic)) RNone
+                , Road (Empty (Hospital Large)) RNone
+                ]
+
+        parks =
+            rangeMultiplier budget.parks
+                [ Road (Empty (Park Playground)) RNone
+                , Road (Empty (Park Lawn)) RNone
+                , Road (Empty (Park Forest)) RNone
+                ]
+
         roads =
             [ Road (Straight { hasCrosswalk = False }) RQuarter
             , Road (Straight { hasCrosswalk = True }) RNone
@@ -92,35 +138,32 @@ generateOneOf ( x, y ) =
             ]
 
         tallBuildings =
-            [ Road (Empty (Housing <| TallApartment 1)) RNone
-            , Road (Empty (Housing <| TallApartment 2)) RNone
-            , Road (Empty (Housing <| TallApartment 3)) RNone
-            , Road (Empty (Hospital Clinic)) RNone
-            , Road (Empty (Building Skyscraper)) RNone
+            [ Road (Empty (Building Skyscraper)) RNone
             , Road (Empty (Building DepartmentStore)) RNone
             , Road (Empty (Building MediumMultiuse)) RNone
             , Road (Empty (Building Office)) RNone
             , Road (Empty (Building LargeOffice)) RNone
-            , Road (Empty (Building PoliceStation)) RNone
             ]
+                ++ highDensityHousing
+                ++ health
+                ++ parks
+                ++ police
 
         buildings =
-            [ Road (Empty (Housing House)) RNone
-            , Road (Empty (Housing LargeHouse)) RNone
-            , Road (Empty (Hospital Clinic)) RNone
-            , Road (Empty (Park Lawn)) RNone
-            , Road (Empty (Park Forest)) RNone
+            [ Road (Empty (Hospital Clinic)) RNone
             , Road (Empty (Park Playground)) RNone
-
-            --   , Road (Empty (Building FastFood)) RNone
+            , Road (Empty (Building FastFood)) RNone
             , Road (Empty (Building Grocery)) RNone
             , Road (Empty (Building Shop)) RNone
             , Road (Empty (Building DepartmentStore)) RNone
             , Road (Empty (Building SmallMultiuse)) RNone
             , Road (Empty (Building Office)) RNone
-            , Road (Empty (Building PoliceStation)) RNone
-            , Road (Empty (Building TrainStation)) RNone
             ]
+                ++ lowDensityHousing
+                ++ health
+                ++ parks
+                ++ police
+                ++ transit
 
         inCityCenter =
             ((toFloat x / cityWidth)
@@ -1042,8 +1085,8 @@ defs =
     [ Svg.defs [] (List.map Road.def allTiles) ]
 
 
-visualization : Budget -> City -> Element msg
-visualization budget city =
+visualization : City -> Element msg
+visualization city =
     let
         tiles =
             Tiler.map drawTile city
