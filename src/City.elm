@@ -78,7 +78,7 @@ rangeMultiplier range roads =
             range.max / 5
 
         multiplier =
-            Debug.log "multiplier" <| ceiling <| range.current / step
+            ceiling <| range.current / step
     in
     List.map (List.repeat multiplier) roads
         |> List.concat
