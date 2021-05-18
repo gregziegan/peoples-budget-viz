@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser exposing (Document)
 import Browser.Events exposing (onAnimationFrameDelta)
-import City exposing (City)
+import City exposing (Budget, City, Range)
 import City.Road exposing (Road, RoadType(..))
 import Color
 import Data.Author as Author
@@ -181,7 +181,11 @@ init urlData =
 
 
 type Msg
-    = ChangedParksBudget Float
+    = ChangedPoliceBudget Float
+    | ChangedHousingBudget Float
+    | ChangedTransitBudget Float
+    | ChangedHealthBudget Float
+    | ChangedParksBudget Float
     | InitializeRandomness Posix
     | Tick Float
     | OnPageChange
@@ -227,16 +231,92 @@ extractSeed pageChange =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ChangedParksBudget parksBudget ->
+        ChangedPoliceBudget value ->
             let
                 newBudget =
                     updateBudget
                         (\budget ->
                             let
-                                parks =
+                                range =
+                                    budget.police
+                            in
+                            { budget | police = { range | current = value } }
+                        )
+                        model.budget
+            in
+            ( { model
+                | budget = newBudget
+              }
+            , Cmd.none
+            )
+
+        ChangedHousingBudget value ->
+            let
+                newBudget =
+                    updateBudget
+                        (\budget ->
+                            let
+                                range =
+                                    budget.housing
+                            in
+                            { budget | housing = { range | current = value } }
+                        )
+                        model.budget
+            in
+            ( { model
+                | budget = newBudget
+              }
+            , Cmd.none
+            )
+
+        ChangedTransitBudget value ->
+            let
+                newBudget =
+                    updateBudget
+                        (\budget ->
+                            let
+                                range =
+                                    budget.transit
+                            in
+                            { budget | transit = { range | current = value } }
+                        )
+                        model.budget
+            in
+            ( { model
+                | budget = newBudget
+              }
+            , Cmd.none
+            )
+
+        ChangedHealthBudget value ->
+            let
+                newBudget =
+                    updateBudget
+                        (\budget ->
+                            let
+                                range =
+                                    budget.health
+                            in
+                            { budget | health = { range | current = value } }
+                        )
+                        model.budget
+            in
+            ( { model
+                | budget = newBudget
+              }
+            , Cmd.none
+            )
+
+        ChangedParksBudget value ->
+            let
+                newBudget =
+                    updateBudget
+                        (\budget ->
+                            let
+                                range =
                                     budget.parks
                             in
-                            { budget | parks = { parks | current = parksBudget } }
+                            { budget | parks = { range | current = value } }
                         )
                         model.budget
             in
@@ -370,10 +450,10 @@ thumb =
     ]
 
 
-viewParksBudgetSlider : Model -> Element Msg
-viewParksBudgetSlider model =
+viewSlider : String -> (Float -> Msg) -> Range -> Element Msg
+viewSlider label onChange range =
     row [ width (Element.px 400), Element.spacing 10, padding 20 ]
-        [ Element.text ("$" ++ (String.fromInt <| round <| model.budget.parks.min) ++ "M")
+        [ Element.text ("$" ++ (String.fromInt <| round <| range.min) ++ "M")
         , Input.slider
             [ Element.height (Element.px 30)
 
@@ -389,18 +469,50 @@ viewParksBudgetSlider model =
                     Element.none
                 )
             ]
-            { onChange = ChangedParksBudget
+            { onChange = onChange
             , label =
                 Input.labelAbove [ Element.centerX ]
-                    (text "Parks Budget")
-            , min = model.budget.parks.min
-            , max = model.budget.parks.max
-            , step = Just <| (model.budget.parks.max - model.budget.parks.min) / 10.0
-            , value = model.budget.parks.current
+                    (text label)
+            , min = range.min
+            , max = range.max
+            , step = Just <| (range.max - range.min) / 10.0
+            , value = range.current
             , thumb =
-                Input.thumb (thumb ++ [ Element.below (Element.el [ padding 5 ] (Element.text ("$" ++ (String.fromInt <| round <| model.budget.parks.current) ++ "M"))) ])
+                Input.thumb (thumb ++ [ Element.below (Element.el [ padding 5 ] (Element.text ("$" ++ (String.fromInt <| round <| range.current) ++ "M"))) ])
             }
-        , Element.text ("$" ++ (String.fromInt <| round <| model.budget.parks.max) ++ "M")
+        , Element.text ("$" ++ (String.fromInt <| round <| range.max) ++ "M")
+        ]
+
+
+viewBudget : Budget -> Element Msg
+viewBudget ({ police, housing, transit, health, parks } as budget) =
+    let
+        originalTotal =
+            City.total City.currentBudget
+
+        total =
+            City.total budget
+    in
+    column [ width fill ]
+        [ row [ Element.centerX ] [ viewSlider "Police" ChangedPoliceBudget police ]
+        , row [ Element.centerX ] [ viewSlider "Housing" ChangedHousingBudget housing ]
+        , row [ Element.centerX ] [ viewSlider "Transit" ChangedTransitBudget transit ]
+        , row [ Element.centerX ] [ viewSlider "Health" ChangedHealthBudget health ]
+        , row [ Element.centerX ] [ viewSlider "Parks" ChangedParksBudget parks ]
+        , row [ Element.centerX ] [ text ("2020 Budget: $" ++ String.fromInt originalTotal ++ "M") ]
+        , row
+            ([ Element.centerX ]
+                ++ (if originalTotal - total < 0 then
+                        [ Font.color (Element.rgb 255 0 0) ]
+
+                    else if originalTotal - total > 0 then
+                        [ Font.color (Element.rgb 0 255 0) ]
+
+                    else
+                        []
+                   )
+            )
+            [ text ("Your Budget: $" ++ String.fromInt total ++ "M") ]
         ]
 
 
@@ -413,7 +525,7 @@ buttonStyles =
 
 viewInteractiveCity model =
     Element.column [ Element.width fill, Element.spacing 10 ]
-        [ Element.row [ Element.centerX ] [ viewParksBudgetSlider model ]
+        [ row [ Element.centerX ] [ viewBudget model.budget ]
         , Element.row [ Element.centerX, Element.spacing 10 ]
             [ Input.button
                 buttonStyles

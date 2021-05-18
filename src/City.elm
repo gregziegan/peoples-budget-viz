@@ -1,4 +1,4 @@
-module City exposing (Budget, City, TotalBudget, currentBudget, generate, totalBudget, visualization)
+module City exposing (Budget, City, Range, TotalBudget, currentBudget, generate, total, totalBudget, visualization)
 
 import City.Building exposing (BuildingType(..))
 import City.Hospital exposing (HospitalType(..))
@@ -25,6 +25,11 @@ type alias TotalBudget =
 totalBudget : TotalBudget
 totalBudget =
     1056
+
+
+total : Budget -> Int
+total { police, housing, transit, health, parks } =
+    round <| police.current + housing.current + transit.current + health.current + parks.current
 
 
 type alias Range =
