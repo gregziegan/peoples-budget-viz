@@ -5,6 +5,7 @@ import City.Hospital exposing (HospitalType(..))
 import City.Housing exposing (HousingType(..))
 import City.Park exposing (ParkType(..))
 import City.Road as Road exposing (Road, RoadType(..))
+import City.Size exposing (CitySize)
 import City.Tile as Tile exposing (Rotation(..), Tile)
 import City.TileType exposing (TileType(..))
 import Element exposing (Device, DeviceClass(..), Element, Orientation(..), px, shrink)
@@ -59,17 +60,13 @@ currentBudget =
     }
 
 
-cityWidth =
-    16
-
-
-cityHeight =
-    16
-
-
-generate : Budget -> Seed -> ( Board Road, Seed )
-generate budget seed =
-    Tiler.generateBoard cityWidth cityHeight (generateOneOf budget) validateNeighbors seed
+generate : CitySize -> Budget -> Seed -> ( Board Road, Seed )
+generate size budget seed =
+    let
+        ( cityWidth, cityHeight ) =
+            City.Size.dimensions size
+    in
+    Tiler.generateBoard cityWidth cityHeight (generateOneOf size budget) validateNeighbors seed
 
 
 rangeMultiplier : Range -> List Road -> List Road
@@ -89,9 +86,12 @@ avgMultiplier roads =
     rangeMultiplier { min = 0, max = 25, current = 15 } roads
 
 
-generateOneOf : Budget -> ( Int, Int ) -> ( Road, List Road )
-generateOneOf budget ( x, y ) =
+generateOneOf : CitySize -> Budget -> ( Int, Int ) -> ( Road, List Road )
+generateOneOf size budget ( x, y ) =
     let
+        ( cityHeight, cityWidth ) =
+            City.Size.dimensions size
+
         police =
             rangeMultiplier budget.police [ Road (Empty (Building PoliceStation)) RNone ]
 
@@ -115,7 +115,7 @@ generateOneOf budget ( x, y ) =
         health =
             rangeMultiplier budget.health
                 [ Road (Empty (Hospital Clinic)) RNone
-                , Road (Empty (Hospital Large)) RNone
+                , Road (Empty (Hospital LargeClinic)) RNone
                 ]
 
         parks =
@@ -987,11 +987,11 @@ validJunction neighborDirection self neighbor =
                     False
 
 
-drawRoad : Int -> ( Int, Int ) -> Road -> ( Svg msg, { x : Int, y : Int, style : RoadType } )
-drawRoad scale ( x, y ) road =
+drawRoad : { width : Float, height : Float } -> ( Int, Int ) -> Road -> ( Svg msg, { x : Int, y : Int, style : RoadType } )
+drawRoad dimens ( x, y ) road =
     let
         tile =
-            { scale = scale, x = x, y = y, rotation = road.rotation }
+            { dimens = dimens, size = City.Size.fromWindow dimens, x = x, y = y, rotation = road.rotation }
     in
     ( Road.view tile road
     , { x = x
@@ -1033,11 +1033,11 @@ type alias TileInfo =
     { x : Int, y : Int, style : RoadType }
 
 
-drawTile : Int -> ( Int, Int ) -> ( Road, List Road ) -> ( Svg msg, TileInfo )
-drawTile scale pos ( road, roads ) =
+drawTile : { width : Float, height : Float } -> ( Int, Int ) -> ( Road, List Road ) -> ( Svg msg, TileInfo )
+drawTile dimens pos ( road, roads ) =
     case roads of
         [] ->
-            drawRoad scale pos road
+            drawRoad dimens pos road
 
         _ ->
             drawUndecided pos (String.join "\n" (List.map (\{ style } -> cellStyleToString style) (road :: roads)))
@@ -1073,7 +1073,7 @@ allTiles =
             , Building LargeOffice
             , Education
             , Hospital Clinic
-            , Hospital Large
+            , Hospital LargeClinic
             , Park TennisCourt
             , Park Forest
             , Park Lawn
@@ -1103,11 +1103,11 @@ mobileCity orientation window city =
 tallCity : Window -> City -> Svg msg
 tallCity window city =
     let
-        scale =
-            min window.width window.height // 13
+        dimens =
+            { width = toFloat window.width, height = 0.9 * toFloat window.height }
 
         tiles =
-            Tiler.map (drawTile scale) city
+            Tiler.map (drawTile dimens) city
 
         buildings =
             tiles
@@ -1144,7 +1144,7 @@ tallCity window city =
                             tile
 
                         Empty _ ->
-                            drawRoad scale ( info.x, info.y ) (Road (Empty BlankTile) RNone)
+                            drawRoad dimens ( info.x, info.y ) (Road (Empty BlankTile) RNone)
                                 |> Tuple.first
 
                         _ ->
@@ -1158,9 +1158,8 @@ tallCity window city =
                 ++ buildings
     in
     svg
-        [ style "border: 1px grey solid"
-        , Attr.height (String.fromFloat (toFloat window.height * 0.75))
-        , Attr.width (String.fromFloat (toFloat window.width * 0.9))
+        [ Attr.height (String.fromFloat dimens.height)
+        , Attr.width (String.fromFloat dimens.width)
         ]
         svgs
 
@@ -1168,11 +1167,11 @@ tallCity window city =
 wideCity : Window -> City -> Svg msg
 wideCity window city =
     let
-        scale =
-            min window.height window.height // 13
+        dimens =
+            { width = 0.9 * toFloat window.width, height = 0.9 * toFloat window.height }
 
         tiles =
-            Tiler.map (drawTile scale) city
+            Tiler.map (drawTile dimens) city
 
         buildings =
             tiles
@@ -1209,7 +1208,7 @@ wideCity window city =
                             tile
 
                         Empty _ ->
-                            drawRoad scale ( info.x, info.y ) (Road (Empty BlankTile) RNone)
+                            drawRoad dimens ( info.x, info.y ) (Road (Empty BlankTile) RNone)
                                 |> Tuple.first
 
                         _ ->
@@ -1223,9 +1222,8 @@ wideCity window city =
                 ++ buildings
     in
     svg
-        [ style "border: 1px grey solid"
-        , Attr.height (String.fromFloat (toFloat window.height * 0.75))
-        , Attr.width (String.fromFloat (toFloat window.width * 0.9))
+        [ Attr.height (String.fromFloat dimens.height)
+        , Attr.width (String.fromFloat dimens.width)
         ]
         svgs
 

@@ -4,10 +4,11 @@ import Browser exposing (Document)
 import Browser.Events exposing (onAnimationFrameDelta)
 import City exposing (Budget, City, Range)
 import City.Road exposing (Road, RoadType(..))
+import City.Size exposing (CitySize(..))
 import Color
 import Data.Author as Author
 import Date
-import Element exposing (Device, Element, column, fill, padding, row, text, width)
+import Element exposing (Device, DeviceClass(..), Element, Orientation(..), column, fill, padding, row, text, width)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
@@ -66,7 +67,7 @@ type alias Rendered =
 
 
 -- the intellij-elm plugin doesn't support type aliases for Programs so we need to use this line
--- main : Platform.Program Pages.Platform.Flags (Pages.Platform.Model Model Msg Metadata Rendered) (Pages.Platform.Msg Msg Metadata Rendered)
+-- main : Platform.Program Pages.Platform.Flags (Pages.Platform.City.generate model.citySize  Model Msg Metadata Rendered) (Pages.Platform.Msg Msg Metadata Rendered)
 
 
 main : Pages.Platform.Program Model Msg Metadata Rendered Pages.PathKey
@@ -138,6 +139,7 @@ type alias Model =
     , originalSeed : Maybe Int
     , randomSeed : Seed
     , window : Metadata.Window
+    , citySize : CitySize
     }
 
 
@@ -164,7 +166,7 @@ init urlData =
                 Tiler.emptyBoard
 
             else
-                Tuple.first <| City.generate City.currentBudget randomSeed
+                Tuple.first <| City.generate Small City.currentBudget randomSeed
     in
     ( { originalSeed =
             if seed == 0 then
@@ -176,6 +178,7 @@ init urlData =
       , city = city
       , budget = City.currentBudget
       , window = { height = 0, width = 0 }
+      , citySize = Small
       }
     , Cmd.batch
         [ Task.perform InitializeRandomness Time.now
@@ -205,7 +208,7 @@ updateBudget : (Budget -> Budget) -> Model -> ( Model, Cmd Msg )
 updateBudget transform model =
     ( { model
         | budget = transform model.budget
-        , city = City.generate model.budget model.randomSeed |> Tuple.first
+        , city = City.generate model.citySize model.budget model.randomSeed |> Tuple.first
       }
     , Cmd.none
     )
@@ -305,7 +308,7 @@ update msg model =
                     Random.initialSeed <| originalSeed
 
                 ( city, nextSeed ) =
-                    City.generate model.budget seed
+                    City.generate model.citySize model.budget seed
             in
             ( { model
                 | originalSeed = Just originalSeed
@@ -329,13 +332,31 @@ update msg model =
             ( { model
                 | originalSeed = seed
                 , randomSeed = randomSeed
-                , city = Tuple.first <| City.generate model.budget randomSeed
+                , city = Tuple.first <| City.generate model.citySize model.budget randomSeed
               }
             , Cmd.none
             )
 
         ChangedWindowSize window ->
-            ( { model | window = window }, Cmd.none )
+            let
+                newSize =
+                    City.Size.fromWindow window
+
+                newCity =
+                    if newSize /= model.citySize then
+                        City.generate newSize model.budget model.randomSeed
+                            |> Tuple.first
+
+                    else
+                        model.city
+            in
+            ( { model
+                | window = window
+                , citySize = newSize
+                , city = newCity
+              }
+            , Cmd.none
+            )
 
         NewCity ->
             ( { model | originalSeed = Nothing }, Task.perform InitializeRandomness Time.now )
@@ -367,7 +388,7 @@ view siteMetadata page =
     StaticHttp.succeed
         { view =
             \model viewForPage ->
-                Layout.view (pageView model siteMetadata page viewForPage) page
+                Layout.view model.window (pageView model siteMetadata page viewForPage) page
         , head = head page.frontmatter
         }
 
@@ -412,7 +433,7 @@ pageView model siteMetadata page viewForPage =
 
         Metadata.Visualization metadata ->
             { title = metadata.title
-            , body = [ viewForPage, viewInteractiveCity model ]
+            , body = [ viewInteractiveCity model ]
             }
 
 
@@ -428,17 +449,21 @@ thumb =
 
 viewSlider : String -> (Float -> Msg) -> Range -> Element Msg
 viewSlider label onChange range =
-    row [ width (Element.px 400), Element.spacing 10, padding 20 ]
+    column
+        [ Element.spacingXY 10 5
+        , Element.paddingXY 10 40
+        ]
         [ Element.text ("$" ++ (String.fromInt <| round <| range.min) ++ "M")
         , Input.slider
-            [ Element.height (Element.px 30)
+            [ Element.width (Element.px 50)
+            , Element.height (Element.px 150)
 
             -- Here is where we're creating/styling the "track"
             , Element.behindContent
                 (Element.el
-                    [ Element.width Element.fill
-                    , Element.height (Element.px 2)
-                    , Element.centerY
+                    [ Element.height fill
+                    , Element.width (Element.px 2)
+                    , Element.centerX
                     , Background.color Palette.color.secondary
                     , Border.rounded 2
                     ]
@@ -447,30 +472,39 @@ viewSlider label onChange range =
             ]
             { onChange = onChange
             , label =
-                Input.labelAbove [ Element.centerX ]
+                Input.labelAbove
+                    [ Element.alignTop
+                    , Element.centerX
+                    ]
                     (text label)
             , min = range.min
             , max = range.max
             , step = Just <| (range.max - range.min) / 5
             , value = range.current
             , thumb =
-                Input.thumb (thumb ++ [ Element.below (Element.el [ padding 5 ] (Element.text ("$" ++ (String.fromInt <| round <| range.current) ++ "M"))) ])
+                Input.thumb (thumb ++ [ Element.below (Element.el [ Element.moveUp 20, Element.moveRight 20 ] (Element.text ("$" ++ (String.fromInt <| round <| range.current) ++ "M"))) ])
             }
         , Element.text ("$" ++ (String.fromInt <| round <| range.max) ++ "M")
         ]
 
 
 viewEssentials : Budget -> Element Msg
-viewEssentials { housing, transit, health } =
-    column [ width fill ]
-        [ row [ Element.centerX ] [ viewSlider "Housing" ChangedHousingBudget housing ]
-        , row [ Element.centerX ] [ viewSlider "Transit" ChangedTransitBudget transit ]
-        , row [ Element.centerX ] [ viewSlider "Health" ChangedHealthBudget health ]
-        ]
+viewEssentials { housing, transit, health, police, parks } =
+    let
+        children =
+            [ [ viewSlider "Housing" ChangedHousingBudget housing ]
+            , [ viewSlider "Transit" ChangedTransitBudget transit ]
+            , [ viewSlider "Health" ChangedHealthBudget health ]
+            , [ viewSlider "Police" ChangedPoliceBudget police ]
+            , [ viewSlider "Parks" ChangedParksBudget parks ]
+            ]
+    in
+    row [ width fill ]
+        (List.map (column []) children)
 
 
-viewServices : Budget -> Element Msg
-viewServices ({ police, parks } as budget) =
+viewTotals : Budget -> Element Msg
+viewTotals budget =
     let
         originalTotal =
             City.total City.currentBudget
@@ -478,11 +512,9 @@ viewServices ({ police, parks } as budget) =
         total =
             City.total budget
     in
-    column [ width fill, Element.spacing 20 ]
-        [ row [ Element.centerX ] [ viewSlider "Police" ChangedPoliceBudget police ]
-        , row [ Element.centerX ] [ viewSlider "Parks" ChangedParksBudget parks ]
-        , row [ Element.centerX ] [ text ("2020 Budget: $" ++ String.fromInt originalTotal ++ "M") ]
-        , row
+    Element.textColumn [ width fill ]
+        [ Element.paragraph [ Element.centerX ] [ text ("2020 budget: $" ++ String.fromInt originalTotal ++ "M") ]
+        , Element.paragraph
             ([ Element.centerX ]
                 ++ (if originalTotal - total < 0 then
                         [ Font.color (Element.rgb 255 0 0) ]
@@ -494,7 +526,8 @@ viewServices ({ police, parks } as budget) =
                         []
                    )
             )
-            [ text ("Your Budget: $" ++ String.fromInt total ++ "M") ]
+            [ text ("Your Budget: $" ++ String.fromInt total ++ "M")
+            ]
         ]
 
 
@@ -505,42 +538,87 @@ buttonStyles =
     ]
 
 
+wideControls : Budget -> Element Msg
+wideControls budget =
+    row
+        [ width fill
+        , Font.size 24
+        ]
+        [ column [ Element.alignLeft, Element.spacing 10 ]
+            [ row [ Element.centerX ] [ viewEssentials budget ]
+            ]
+        , column [ Element.alignRight, Element.spacing 10 ]
+            [ row [ Element.centerX ] [ viewTotals budget ] ]
+        ]
+
+
+narrowControls : Budget -> Element Msg
+narrowControls budget =
+    column
+        [ width fill
+        , Element.height fill
+        , Element.spacing 2
+        , Font.size 10
+        ]
+        [ row [ Element.alignLeft, Element.spacing 2 ]
+            [ row [ Element.centerX ] [ viewEssentials budget ]
+            ]
+        , row [ Element.alignBottom, Element.spacing 2 ]
+            [ row [ Element.centerX, Font.center ] [ viewTotals budget ] ]
+        ]
+
+
+mobileControls orientation budget =
+    case orientation of
+        Portrait ->
+            narrowControls budget
+
+        Landscape ->
+            wideControls budget
+
+
+controls device budget =
+    case device.class of
+        Phone ->
+            mobileControls device.orientation budget
+
+        Tablet ->
+            mobileControls device.orientation budget
+
+        Desktop ->
+            wideControls budget
+
+        BigDesktop ->
+            wideControls budget
+
+
+viewInteractiveCity : Model -> Element Msg
 viewInteractiveCity model =
     let
         device =
             Element.classifyDevice model.window
     in
     column [ width fill, Element.spacing 10 ]
-        [ row [ Element.centerX, Element.spacing 10 ]
+        [ row
+            [ Element.centerX
+            , Element.inFront (controls device model.budget)
+            ]
+            [ City.visualization device model.window model.city ]
+        , row [ Element.centerX, Element.spacing 10, Element.padding 10 ]
             [ Input.button
                 buttonStyles
-                { onPress = Just NewCity, label = Element.text "Generate another city" }
+                { onPress = Just NewCity, label = Element.text "Randomize" }
             , case model.originalSeed of
                 Just originalSeed ->
                     Element.link (buttonStyles ++ [ Border.width 0, Background.color Palette.color.secondary, Font.color (Element.rgb255 255 255 255) ])
                         { url = "/?seed=" ++ String.fromInt originalSeed
                         , label =
-                            Element.text "Share your city"
+                            Element.text "Share"
                         }
 
                 Nothing ->
                     Element.none
             ]
-        , row
-            [ Element.centerX
-            , Element.inFront
-                (row
-                    [ width fill
-                    ]
-                    [ column [ Element.alignLeft, Element.spacing 10 ]
-                        [ row [ Element.centerX ] [ viewEssentials model.budget ]
-                        ]
-                    , column [ Element.alignRight, Element.spacing 10 ]
-                        [ row [ Element.centerX ] [ viewServices model.budget ] ]
-                    ]
-                )
-            ]
-            [ City.visualization device model.window model.city ]
         ]
 
 
