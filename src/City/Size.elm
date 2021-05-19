@@ -9,15 +9,14 @@ type CitySize
 
 fromWindow : { width : number, height : number } -> CitySize
 fromWindow window =
-    Debug.log "size" <|
-        if window.width < 600 || window.height < 800 then
-            Small
+    if window.width < 600 || window.height < 800 then
+        Small
 
-        else if window.width < 1000 || window.height < 1000 then
-            Medium
+    else if window.width < 1000 || window.height < 1000 then
+        Medium
 
-        else
-            Large
+    else
+        Large
 
 
 dimensions : CitySize -> ( number, number )
