@@ -1,4 +1,4 @@
-module City.Tile exposing (Rotation(..), Tile, blank, def, default, id, position, rotate)
+module City.Tile exposing (Rotation(..), Tile, blank, def, id, position, rotate)
 
 import City.Building as Building exposing (BuildingType(..))
 import City.Education as Education
@@ -11,8 +11,7 @@ import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox, x)
 
 
 type alias Tile =
-    { width : Int
-    , height : Int
+    { scale : Int
     , rotation : Rotation
     , x : Int
     , y : Int
@@ -26,16 +25,6 @@ type Rotation
     | RThreeQuarters
 
 
-default : ( Int, Int ) -> Rotation -> Tile
-default ( x, y ) rotation =
-    { height = 100
-    , width = 100
-    , rotation = rotation
-    , x = x
-    , y = y
-    }
-
-
 originX =
     1
 
@@ -46,7 +35,7 @@ originY =
 
 offset : Tile -> ( Int, Int )
 offset tile =
-    ( tile.x + originX + tile.y, originY - tile.y + tile.x )
+    ( tile.x + (tile.scale // 20) + tile.y, (tile.scale // 7) - tile.y + tile.x )
 
 
 position : Tile -> List (Svg.Attribute msg)
@@ -55,19 +44,19 @@ position tile =
         ( x, y ) =
             offset tile
     in
-    [ Attr.width (String.fromInt tile.width)
-    , Attr.height (String.fromInt tile.height)
-    , Attr.x (String.fromFloat <| (toFloat x * 95 / 2))
-    , Attr.y (String.fromFloat <| (toFloat y * 60 / 2))
+    [ Attr.width (String.fromInt tile.scale)
+    , Attr.height (String.fromInt tile.scale)
+
+    -- , Attr.x (String.fromFloat <| (toFloat x * 95 / 2))
+    -- , Attr.y (String.fromFloat <| (toFloat y * 60 / 2))
+    , Attr.x (String.fromFloat <| (toFloat x * toFloat tile.scale * 0.95 / 2))
+    , Attr.y (String.fromFloat <| (toFloat y * toFloat tile.scale * 0.6 / 2))
     ]
 
 
 rotate : Tile -> List (Svg.Attribute msg)
 rotate tile =
     let
-        ( x, y ) =
-            offset tile
-
         rotInDeg =
             case tile.rotation of
                 RNone ->
@@ -82,15 +71,10 @@ rotate tile =
                 RThreeQuarters ->
                     -180
 
-        midX =
-            -- (x * 95) +
-            tile.width // 2
-
-        midY =
-            -- (y * 60) +
-            tile.height // 2
+        mid =
+            tile.scale // 2
     in
-    [ Attr.transform ("rotate(" ++ String.fromInt rotInDeg ++ " " ++ String.fromInt midX ++ " " ++ String.fromInt midY ++ ")") ]
+    [ Attr.transform ("rotate(" ++ String.fromInt rotInDeg ++ " " ++ String.fromInt mid ++ " " ++ String.fromInt mid ++ ")") ]
 
 
 def : TileType -> Svg msg

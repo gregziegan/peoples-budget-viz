@@ -1,4 +1,4 @@
-module Main exposing (main)
+port module Main exposing (main, windowSize)
 
 import Browser exposing (Document)
 import Browser.Events exposing (onAnimationFrameDelta)
@@ -7,7 +7,7 @@ import City.Road exposing (Road, RoadType(..))
 import Color
 import Data.Author as Author
 import Date
-import Element exposing (Element, column, fill, padding, row, text, width)
+import Element exposing (Device, Element, column, fill, padding, row, text, width)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
@@ -23,10 +23,11 @@ import Json.Decode
 import Layout
 import Markdown.Parser
 import Markdown.Renderer
-import Metadata exposing (Metadata)
+import Metadata exposing (Metadata, Window)
 import MySitemap
 import Page.Article
 import Pages exposing (images, pages)
+import Pages.ImagePath exposing (Dimensions)
 import Pages.Manifest as Manifest
 import Pages.Manifest.Category
 import Pages.PagePath exposing (PagePath)
@@ -136,6 +137,7 @@ type alias Model =
     , budget : City.Budget
     , originalSeed : Maybe Int
     , randomSeed : Seed
+    , window : Metadata.Window
     }
 
 
@@ -173,6 +175,7 @@ init urlData =
       , randomSeed = randomSeed
       , city = city
       , budget = City.currentBudget
+      , window = { height = 0, width = 0 }
       }
     , Cmd.batch
         [ Task.perform InitializeRandomness Time.now
@@ -194,6 +197,7 @@ type Msg
         , path : PagePath Pages.PathKey
         , query : Maybe String
         }
+    | ChangedWindowSize Window
     | NewCity
 
 
@@ -330,6 +334,9 @@ update msg model =
             , Cmd.none
             )
 
+        ChangedWindowSize window ->
+            ( { model | window = window }, Cmd.none )
+
         NewCity ->
             ( { model | originalSeed = Nothing }, Task.perform InitializeRandomness Time.now )
 
@@ -339,7 +346,10 @@ update msg model =
 
 
 subscriptions _ _ _ =
-    Sub.none
+    Sub.batch
+        [ Browser.Events.onResize (\width height -> ChangedWindowSize (Window width height))
+        , windowSize ChangedWindowSize
+        ]
 
 
 view :
@@ -441,7 +451,7 @@ viewSlider label onChange range =
                     (text label)
             , min = range.min
             , max = range.max
-            , step = Just <| (range.max - range.min) / 10.0
+            , step = Just <| (range.max - range.min) / 5
             , value = range.current
             , thumb =
                 Input.thumb (thumb ++ [ Element.below (Element.el [ padding 5 ] (Element.text ("$" ++ (String.fromInt <| round <| range.current) ++ "M"))) ])
@@ -451,14 +461,7 @@ viewSlider label onChange range =
 
 
 viewEssentials : Budget -> Element Msg
-viewEssentials ({ housing, transit, health } as budget) =
-    let
-        originalTotal =
-            City.total City.currentBudget
-
-        total =
-            City.total budget
-    in
+viewEssentials { housing, transit, health } =
     column [ width fill ]
         [ row [ Element.centerX ] [ viewSlider "Housing" ChangedHousingBudget housing ]
         , row [ Element.centerX ] [ viewSlider "Transit" ChangedTransitBudget transit ]
@@ -503,6 +506,10 @@ buttonStyles =
 
 
 viewInteractiveCity model =
+    let
+        device =
+            Element.classifyDevice model.window
+    in
     column [ width fill, Element.spacing 10 ]
         [ row [ Element.centerX, Element.spacing 10 ]
             [ Input.button
@@ -533,7 +540,7 @@ viewInteractiveCity model =
                     ]
                 )
             ]
-            [ City.visualization model.city ]
+            [ City.visualization device model.window model.city ]
         ]
 
 
@@ -673,3 +680,6 @@ canonicalSiteUrl =
 siteTagline : String
 siteTagline =
     "A coalition of grassroots Nashville organizations working with the local community on a democratic city budget."
+
+
+port windowSize : (Window -> msg) -> Sub msg

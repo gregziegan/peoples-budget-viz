@@ -1,4 +1,4 @@
-module Metadata exposing (ArticleMetadata, Metadata(..), PageMetadata, decoder)
+module Metadata exposing (ArticleMetadata, Metadata(..), PageMetadata, Window, decoder)
 
 import Data.Author
 import Date exposing (Date)
@@ -6,6 +6,10 @@ import Json.Decode as Decode exposing (Decoder)
 import List.Extra
 import Pages
 import Pages.ImagePath as ImagePath exposing (ImagePath)
+
+
+type alias Window =
+    { width : Int, height : Int }
 
 
 type Metadata

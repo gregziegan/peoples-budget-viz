@@ -123,115 +123,9 @@ view tile road =
                     ]
                 ]
 
-        Empty (Building Skyscraper) ->
-            Svg.g
-                [ Attr.transform "translate(0, -100)"
-                ]
-                [ svg (Tile.position { tile | width = 100, height = 200 })
-                    [ Svg.g []
-                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                        ]
-                    ]
-                ]
-
-        Empty (Building SmallMultiuse) ->
-            Svg.g
-                [ Attr.transform "translate(0, -15)"
-                ]
-                [ svg (Tile.position { tile | width = 100, height = 100 })
-                    [ Svg.g []
-                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                        ]
-                    ]
-                ]
-
-        Empty (Building DepartmentStore) ->
-            Svg.g
-                [ Attr.transform "translate(0, -15)"
-                ]
-                [ svg (Tile.position { tile | width = 100, height = 100 })
-                    [ Svg.g []
-                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                        ]
-                    ]
-                ]
-
-        Empty (Building Office) ->
-            Svg.g
-                [ Attr.transform "translate(10, -10)"
-                ]
-                [ svg (Tile.position { tile | width = 100, height = 100 })
-                    [ Svg.g []
-                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                        ]
-                    ]
-                ]
-
-        Empty (Building LargeOffice) ->
-            Svg.g
-                [ Attr.transform "translate(0, -15)"
-                ]
-                [ svg (Tile.position { tile | width = 100, height = 100 })
-                    [ Svg.g []
-                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                        ]
-                    ]
-                ]
-
-        Empty (Building MediumMultiuse) ->
-            Svg.g
-                [ Attr.transform "translate(0, -15)"
-                ]
-                [ svg (Tile.position { tile | width = 100, height = 100 })
-                    [ Svg.g []
-                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                        ]
-                    ]
-                ]
-
-        Empty (Park _) ->
-            svg (Tile.position tile)
-                [ Svg.g []
-                    [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                    ]
-                ]
-
-        Empty (Housing House) ->
-            Svg.g
-                [ Attr.transform "translate(15, 10)"
-                ]
-                [ svg (Tile.position { tile | width = 75, height = 75 })
-                    [ Svg.g []
-                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                        ]
-                    ]
-                ]
-
-        Empty (Housing LargeHouse) ->
-            Svg.g
-                [ Attr.transform "translate(5, 15)"
-                ]
-                [ svg (Tile.position { tile | width = 75, height = 75 })
-                    [ Svg.g []
-                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                        ]
-                    ]
-                ]
-
-        Empty (Housing (TallApartment _)) ->
-            Svg.g
-                [ Attr.transform "translate(0, -40)"
-                ]
-                [ svg (Tile.position { tile | width = 100, height = 125 })
-                    [ Svg.g []
-                        [ Svg.use [ xlinkHref ("#" ++ id road) ] []
-                        ]
-                    ]
-                ]
-
         Empty _ ->
             Svg.g
-                [ Attr.transform "translate(0, -30)"
+                [--Attr.transform "translate(0, -30)"
                 ]
                 [ svg (Tile.position tile)
                     [ Svg.g []
@@ -245,7 +139,6 @@ view tile road =
                 [ Svg.g (Tile.rotate tile)
                     [ Svg.use [ xlinkHref ("#" ++ id road) ] []
                     ]
-                , Svg.text_ [ Attr.x "100", Attr.y "100", Attr.fontSize "10", fill "red" ] [ Svg.text (String.fromInt tile.x ++ ", " ++ String.fromInt tile.y) ]
                 ]
 
 

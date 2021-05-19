@@ -7,7 +7,8 @@ import City.Park exposing (ParkType(..))
 import City.Road as Road exposing (Road, RoadType(..))
 import City.Tile as Tile exposing (Rotation(..), Tile)
 import City.TileType exposing (TileType(..))
-import Element exposing (Element, px, shrink)
+import Element exposing (Device, DeviceClass(..), Element, Orientation(..), px, shrink)
+import Metadata exposing (Window)
 import Random exposing (Seed)
 import Svg exposing (Svg, defs, path, svg)
 import Svg.Attributes as Attr exposing (d, fill, style, transform, viewBox)
@@ -986,11 +987,11 @@ validJunction neighborDirection self neighbor =
                     False
 
 
-drawRoad : ( Int, Int ) -> Road -> ( Svg msg, { x : Int, y : Int, style : RoadType } )
-drawRoad ( x, y ) road =
+drawRoad : Int -> ( Int, Int ) -> Road -> ( Svg msg, { x : Int, y : Int, style : RoadType } )
+drawRoad scale ( x, y ) road =
     let
         tile =
-            Tile.default ( x, y ) road.rotation
+            { scale = scale, x = x, y = y, rotation = road.rotation }
     in
     ( Road.view tile road
     , { x = x
@@ -1032,11 +1033,11 @@ type alias TileInfo =
     { x : Int, y : Int, style : RoadType }
 
 
-drawTile : ( Int, Int ) -> ( Road, List Road ) -> ( Svg msg, TileInfo )
-drawTile pos ( road, roads ) =
+drawTile : Int -> ( Int, Int ) -> ( Road, List Road ) -> ( Svg msg, TileInfo )
+drawTile scale pos ( road, roads ) =
     case roads of
         [] ->
-            drawRoad pos road
+            drawRoad scale pos road
 
         _ ->
             drawUndecided pos (String.join "\n" (List.map (\{ style } -> cellStyleToString style) (road :: roads)))
@@ -1089,11 +1090,24 @@ defs =
     [ Svg.defs [] (List.map Road.def allTiles) ]
 
 
-visualization : City -> Element msg
-visualization city =
+mobileCity : Orientation -> Window -> City -> Svg msg
+mobileCity orientation window city =
+    case orientation of
+        Portrait ->
+            tallCity window city
+
+        Landscape ->
+            wideCity window city
+
+
+tallCity : Window -> City -> Svg msg
+tallCity window city =
     let
+        scale =
+            min window.width window.height // 13
+
         tiles =
-            Tiler.map drawTile city
+            Tiler.map (drawTile scale) city
 
         buildings =
             tiles
@@ -1130,23 +1144,109 @@ visualization city =
                             tile
 
                         Empty _ ->
-                            drawRoad ( info.x, info.y ) (Road (Empty BlankTile) RNone)
+                            drawRoad scale ( info.x, info.y ) (Road (Empty BlankTile) RNone)
                                 |> Tuple.first
 
                         _ ->
                             tile
                 )
                 tiles
+
+        svgs =
+            defs
+                ++ roads
+                ++ buildings
     in
+    svg
+        [ style "border: 1px grey solid"
+        , Attr.height (String.fromFloat (toFloat window.height * 0.75))
+        , Attr.width (String.fromFloat (toFloat window.width * 0.9))
+        ]
+        svgs
+
+
+wideCity : Window -> City -> Svg msg
+wideCity window city =
+    let
+        scale =
+            min window.height window.height // 13
+
+        tiles =
+            Tiler.map (drawTile scale) city
+
+        buildings =
+            tiles
+                |> List.filterMap
+                    (\( tile, info ) ->
+                        case info.style of
+                            Empty BlankTile ->
+                                Nothing
+
+                            Empty _ ->
+                                Just ( tile, info )
+
+                            _ ->
+                                Nothing
+                    )
+                |> List.sortWith
+                    (\( tile, info ) ( tile2, info2 ) ->
+                        if info.x < info2.x || info.y > info2.y then
+                            LT
+
+                        else if info.x == info2.x && info.y == info2.y then
+                            EQ
+
+                        else
+                            GT
+                    )
+                |> List.map Tuple.first
+
+        roads =
+            List.map
+                (\( tile, info ) ->
+                    case info.style of
+                        Empty BlankTile ->
+                            tile
+
+                        Empty _ ->
+                            drawRoad scale ( info.x, info.y ) (Road (Empty BlankTile) RNone)
+                                |> Tuple.first
+
+                        _ ->
+                            tile
+                )
+                tiles
+
+        svgs =
+            defs
+                ++ roads
+                ++ buildings
+    in
+    svg
+        [ style "border: 1px grey solid"
+        , Attr.height (String.fromFloat (toFloat window.height * 0.75))
+        , Attr.width (String.fromFloat (toFloat window.width * 0.9))
+        ]
+        svgs
+
+
+visualization : Device -> Window -> City -> Element msg
+visualization device window city =
     Element.column [ Element.centerX ]
         [ Element.el [ Element.width shrink, Element.height shrink ]
             (Element.html
-                (svg
-                    [ style "border: 1px grey solid", Attr.height "1200", Attr.width "1600" ]
-                    (defs
-                        ++ roads
-                        ++ buildings
-                    )
+                (case device.class of
+                    Phone ->
+                        mobileCity device.orientation window city
+
+                    Tablet ->
+                        mobileCity device.orientation window city
+
+                    Desktop ->
+                        wideCity window city
+
+                    BigDesktop ->
+                        wideCity window city
                 )
             )
         ]
