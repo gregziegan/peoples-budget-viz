@@ -505,7 +505,7 @@ viewSlider label onChange range =
         [ Element.spacingXY 10 5
         , Element.paddingXY 10 40
         ]
-        [ Element.text ("$" ++ (String.fromInt <| round <| range.min) ++ "M")
+        [ Element.text ("$" ++ (String.fromInt <| round <| range.max) ++ "M")
         , Input.slider
             [ Element.width (Element.px 50)
             , Element.height (Element.px 150)
@@ -536,7 +536,7 @@ viewSlider label onChange range =
             , thumb =
                 Input.thumb (thumb ++ [ Element.below (Element.el [ Element.moveUp 20, Element.moveRight 20 ] (Element.text ("$" ++ (String.fromInt <| round <| range.current) ++ "M"))) ])
             }
-        , Element.text ("$" ++ (String.fromInt <| round <| range.max) ++ "M")
+        , Element.text ("$" ++ (String.fromInt <| round <| range.min) ++ "M")
         ]
 
 
