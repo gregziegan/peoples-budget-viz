@@ -187,11 +187,7 @@ init urlData =
 
 
 type Msg
-    = ChangedPoliceBudget Float
-    | ChangedHousingBudget Float
-    | ChangedTransitBudget Float
-    | ChangedHealthBudget Float
-    | ChangedParksBudget Float
+    = ChangedBudget BudgetArea Float
     | InitializeRandomness Posix
     | Tick Float
     | OnPageChange
@@ -204,10 +200,118 @@ type Msg
     | NewCity
 
 
-updateBudget : (Budget -> Budget) -> Model -> ( Model, Cmd Msg )
-updateBudget transform model =
+type BudgetArea
+    = Police
+    | Housing
+    | Health
+    | Transit
+    | Parks
+
+
+updateCurrent : Float -> Range -> Range
+updateCurrent amount range =
+    { range | current = amount }
+
+
+addCurrent : Float -> Range -> Range
+addCurrent amount range =
+    { range | current = range.current + amount }
+
+
+redistribute : Float -> Range -> Float
+redistribute amount range =
+    (amount - range.current) / -4
+
+
+whileBalancing : BudgetArea -> Float -> Budget -> Budget
+whileBalancing area amount budget =
+    case area of
+        Police ->
+            let
+                range =
+                    budget.police
+
+                distribute =
+                    redistribute amount range
+            in
+            { budget
+                | police = updateCurrent amount range
+                , housing = addCurrent distribute budget.housing
+                , health = addCurrent distribute budget.health
+                , transit = addCurrent distribute budget.transit
+                , parks = addCurrent distribute budget.parks
+            }
+
+        Housing ->
+            let
+                range =
+                    budget.housing
+
+                distribute =
+                    redistribute amount range
+            in
+            { budget
+                | housing =
+                    updateCurrent amount range
+                , police = addCurrent distribute budget.police
+                , health = addCurrent distribute budget.health
+                , transit = addCurrent distribute budget.transit
+                , parks = addCurrent distribute budget.parks
+            }
+
+        Health ->
+            let
+                range =
+                    budget.health
+
+                distribute =
+                    redistribute amount range
+            in
+            { budget
+                | health = updateCurrent amount range
+                , police = addCurrent distribute budget.police
+                , housing = addCurrent distribute budget.housing
+                , transit = addCurrent distribute budget.transit
+                , parks = addCurrent distribute budget.parks
+            }
+
+        Transit ->
+            let
+                range =
+                    budget.transit
+
+                distribute =
+                    redistribute amount range
+            in
+            { budget
+                | transit = updateCurrent amount range
+                , police = addCurrent distribute budget.police
+                , housing = addCurrent distribute budget.housing
+                , health = addCurrent distribute budget.health
+                , parks = addCurrent distribute budget.parks
+            }
+
+        Parks ->
+            let
+                range =
+                    budget.parks
+
+                distribute =
+                    redistribute amount range
+            in
+            { budget
+                | parks = updateCurrent amount range
+                , police = addCurrent distribute budget.police
+                , housing = addCurrent distribute budget.housing
+                , health = addCurrent distribute budget.health
+                , transit = addCurrent distribute budget.transit
+            }
+
+
+updateBudget : BudgetArea -> Float -> Model -> ( Model, Cmd Msg )
+updateBudget area amount model =
     ( { model
-        | budget = transform model.budget
+        | budget = whileBalancing area amount model.budget
         , city = City.generate model.citySize model.budget model.randomSeed |> Tuple.first
       }
     , Cmd.none
@@ -244,60 +348,8 @@ extractSeed pageChange =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ChangedPoliceBudget value ->
-            updateBudget
-                (\budget ->
-                    let
-                        range =
-                            budget.police
-                    in
-                    { budget | police = { range | current = value } }
-                )
-                model
-
-        ChangedHousingBudget value ->
-            updateBudget
-                (\budget ->
-                    let
-                        range =
-                            budget.housing
-                    in
-                    { budget | housing = { range | current = value } }
-                )
-                model
-
-        ChangedTransitBudget value ->
-            updateBudget
-                (\budget ->
-                    let
-                        range =
-                            budget.transit
-                    in
-                    { budget | transit = { range | current = value } }
-                )
-                model
-
-        ChangedHealthBudget value ->
-            updateBudget
-                (\budget ->
-                    let
-                        range =
-                            budget.health
-                    in
-                    { budget | health = { range | current = value } }
-                )
-                model
-
-        ChangedParksBudget value ->
-            updateBudget
-                (\budget ->
-                    let
-                        range =
-                            budget.parks
-                    in
-                    { budget | parks = { range | current = value } }
-                )
-                model
+        ChangedBudget area value ->
+            updateBudget area value model
 
         InitializeRandomness now ->
             let
@@ -492,11 +544,11 @@ viewEssentials : Budget -> Element Msg
 viewEssentials { housing, transit, health, police, parks } =
     let
         children =
-            [ [ viewSlider "Housing" ChangedHousingBudget housing ]
-            , [ viewSlider "Transit" ChangedTransitBudget transit ]
-            , [ viewSlider "Health" ChangedHealthBudget health ]
-            , [ viewSlider "Police" ChangedPoliceBudget police ]
-            , [ viewSlider "Parks" ChangedParksBudget parks ]
+            [ [ viewSlider "Housing" (ChangedBudget Housing) housing ]
+            , [ viewSlider "Transit" (ChangedBudget Transit) transit ]
+            , [ viewSlider "Health" (ChangedBudget Health) health ]
+            , [ viewSlider "Police" (ChangedBudget Police) police ]
+            , [ viewSlider "Parks" (ChangedBudget Parks) parks ]
             ]
     in
     row [ width fill ]
